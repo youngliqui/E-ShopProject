@@ -1,4 +1,4 @@
-package by.youngliqui.EShopProject.domain;
+package by.youngliqui.EShopProject.models;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -24,11 +24,16 @@ public class Product {
 
     private String title;
 
+    private String description;
+
     private BigDecimal price;
 
-    @ManyToMany
+    @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(name = "products_categories",
             joinColumns = @JoinColumn(name = "product_id"),
             inverseJoinColumns = @JoinColumn(name = "category_id"))
     private List<Category> categories;
+
+    @Enumerated(EnumType.STRING)
+    private Size size;
 }

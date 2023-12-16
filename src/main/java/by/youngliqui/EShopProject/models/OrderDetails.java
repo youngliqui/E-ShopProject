@@ -1,4 +1,4 @@
-package by.youngliqui.EShopProject.domain;
+package by.youngliqui.EShopProject.models;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
