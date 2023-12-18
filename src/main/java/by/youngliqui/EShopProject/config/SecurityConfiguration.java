@@ -26,12 +26,13 @@ public class SecurityConfiguration {
     public SecurityFilterChain configure (HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(authorizeRequests ->
                 authorizeRequests
-                        .requestMatchers("user/new").hasAuthority(Role.ADMIN.name())
+                        .requestMatchers("/users").hasAnyAuthority(Role.ADMIN.name(), Role.MANAGER.name())
+                        .requestMatchers("/users/new").hasAuthority(Role.ADMIN.name())
                         .anyRequest().permitAll()
         ).formLogin(formLogin ->
                 formLogin
                         .loginPage("/login")
-                        .loginProcessingUrl("/auth")
+                        .loginProcessingUrl("/process_login")
                         .permitAll()
                         .defaultSuccessUrl("/hello", true)
                         .failureUrl("/login?error")

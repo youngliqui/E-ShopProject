@@ -14,7 +14,9 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @RestController
@@ -60,6 +62,38 @@ public class UserController {
             throw new UserNotCreatedException(errorMsg.toString());
         }
     }
+
+    @GetMapping("/profile")
+    public UserDTO profileUser(Principal principal) {
+        if (principal == null) {
+            throw new RuntimeException("You are not authorize"); // add notAuthorizeException
+        }
+        User user = userService.findByName(principal.getName());
+
+        return UserDTO.builder()
+                .username(user.getName())
+                .email(user.getEmail())
+                .build();
+    }
+
+    @PostMapping("/profile")
+    public ResponseEntity<UserDTO> updateProfileUser(@RequestBody @Valid UserDTO dto,
+                                                        BindingResult bindingResult,
+                                                        Principal principal) {
+        if (principal == null || !Objects.equals(principal.getName(), dto.getUsername())) {
+            throw new RuntimeException("You are not authorize"); // create notAuthorizeException
+        }
+        if (dto.getPassword() != null
+                && !dto.getPassword().isEmpty()
+                && !Objects.equals(dto.getPassword(), dto.getMatchingPassword())) {
+
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(dto); // add message
+        }
+
+        userService.updateProfile(dto);
+        return ResponseEntity.ok(dto);
+    }
+
 
     @ExceptionHandler
     private ResponseEntity<UserErrorResponse> handleException(UserNotCreatedException e) {

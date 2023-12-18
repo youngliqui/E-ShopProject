@@ -20,11 +20,12 @@ import java.util.Objects;
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
 
-    //private final PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository) {
+    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -46,6 +47,33 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<User> getAll() {
         return userRepository.findAll();
+    }
+
+    @Override
+    public User findByName(String name) {
+        return userRepository.findFirstByName(name);
+    }
+
+    @Override
+    public void updateProfile(UserDTO userDTO) {
+        User savedUser = userRepository.findFirstByName(userDTO.getUsername());
+        if (savedUser == null) {
+            throw new RuntimeException("user not found by name " + userDTO.getUsername());
+        }
+
+        boolean isChanged = false;
+        if (userDTO.getPassword() != null && !userDTO.getPassword().isEmpty()) {
+            savedUser.setPassword(passwordEncoder.encode(userDTO.getPassword()));
+            isChanged = true;
+        }
+
+        if (!Objects.equals(userDTO.getEmail(), savedUser.getEmail())) {
+            savedUser.setEmail(userDTO.getEmail());
+            isChanged = true;
+        }
+        if (isChanged) {
+            userRepository.save(savedUser);
+        }
     }
 
     @Override
