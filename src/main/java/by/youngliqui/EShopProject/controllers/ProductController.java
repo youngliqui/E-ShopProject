@@ -10,6 +10,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
+
 @RestController
 @RequestMapping("/products")
 public class ProductController {
@@ -30,6 +32,17 @@ public class ProductController {
                                           BindingResult bindingResult) {
         // implements adding new product function
         return null;
+    }
+
+    @GetMapping("/{id}/bucket")
+    public ResponseEntity<HttpStatus> addBucket(@PathVariable Long id, Principal principal) {
+        // if principal == null -> redirect to products
+        if (principal == null) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+        productService.addToUserBucket(id, principal.getName());
+
+        return ResponseEntity.ok(HttpStatus.OK);
     }
 
 }

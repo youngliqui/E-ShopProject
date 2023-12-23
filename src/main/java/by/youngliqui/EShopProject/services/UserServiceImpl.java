@@ -11,12 +11,14 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 @Service
+@Transactional(readOnly = true)
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
 
@@ -29,6 +31,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public boolean save(UserDTO userDTO) {
         if (!Objects.equals(userDTO.getPassword(), userDTO.getMatchingPassword())) {
             throw new RuntimeException("Password is not equals"); // make User password exception;
@@ -45,6 +48,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
+    public void save(User user) {
+        userRepository.save(user);
+    }
+
+    @Override
     public List<User> getAll() {
         return userRepository.findAll();
     }
@@ -55,6 +64,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public void updateProfile(UserDTO userDTO) {
         User savedUser = userRepository.findFirstByName(userDTO.getUsername());
         if (savedUser == null) {
