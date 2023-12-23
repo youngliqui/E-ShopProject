@@ -1,8 +1,6 @@
 package by.youngliqui.EShopProject.config;
 
 import by.youngliqui.EShopProject.models.Role;
-import by.youngliqui.EShopProject.services.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -26,8 +24,8 @@ public class SecurityConfiguration {
     public SecurityFilterChain configure (HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(authorizeRequests ->
                 authorizeRequests
-                        .requestMatchers("/users").hasAnyAuthority(Role.ADMIN.name(), Role.MANAGER.name())
-                        .requestMatchers("/users/new").hasAuthority(Role.ADMIN.name())
+                        //.requestMatchers("/users").hasAnyAuthority(Role.ADMIN.name(), Role.MANAGER.name())
+                        //.requestMatchers("/users/new").hasAuthority(Role.ADMIN.name())
                         .anyRequest().permitAll()
         ).formLogin(formLogin ->
                 formLogin
