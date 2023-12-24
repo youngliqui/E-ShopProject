@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.security.Principal;
 
 @RestController
-@RequestMapping("/buckets")
+@RequestMapping("/bucket")
 public class BucketController {
     private final BucketService bucketService;
 
@@ -19,7 +19,7 @@ public class BucketController {
         this.bucketService = bucketService;
     }
 
-    @GetMapping("/buckets")
+    @GetMapping
     public BucketDTO aboutBucket(Principal principal) {
         if (principal == null) {
             return new BucketDTO();

@@ -3,6 +3,7 @@ package by.youngliqui.EShopProject.controllers;
 import by.youngliqui.EShopProject.dto.UserDTO;
 import by.youngliqui.EShopProject.dto.UsersResponse;
 import by.youngliqui.EShopProject.exceptions.UserErrorResponse;
+import by.youngliqui.EShopProject.exceptions.UserNotAuthorizeException;
 import by.youngliqui.EShopProject.exceptions.UserNotCreatedException;
 import by.youngliqui.EShopProject.models.User;
 import by.youngliqui.EShopProject.services.UserService;
@@ -66,7 +67,7 @@ public class UserController {
     @GetMapping("/profile")
     public UserDTO profileUser(Principal principal) {
         if (principal == null) {
-            throw new RuntimeException("You are not authorize"); // add notAuthorizeException
+            throw new UserNotAuthorizeException("You are not authorize");
         }
         User user = userService.findByName(principal.getName());
 
@@ -80,8 +81,9 @@ public class UserController {
     public ResponseEntity<UserDTO> updateProfileUser(@RequestBody @Valid UserDTO dto,
                                                         BindingResult bindingResult,
                                                         Principal principal) {
+
         if (principal == null || !Objects.equals(principal.getName(), dto.getUsername())) {
-            throw new RuntimeException("You are not authorize"); // create notAuthorizeException
+            throw new UserNotAuthorizeException("You are not authorize");
         }
         if (dto.getPassword() != null
                 && !dto.getPassword().isEmpty()
@@ -92,17 +94,6 @@ public class UserController {
 
         userService.updateProfile(dto);
         return ResponseEntity.ok(dto);
-    }
-
-
-    @ExceptionHandler
-    private ResponseEntity<UserErrorResponse> handleException(UserNotCreatedException e) {
-        UserErrorResponse response = new UserErrorResponse(
-                e.getMessage(),
-                System.currentTimeMillis()
-        );
-
-        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
     private User convertToUser(UserDTO userDTO) {
