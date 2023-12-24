@@ -2,7 +2,6 @@ package by.youngliqui.EShopProject.controllers;
 
 import by.youngliqui.EShopProject.dto.UserDTO;
 import by.youngliqui.EShopProject.dto.UsersResponse;
-import by.youngliqui.EShopProject.exceptions.UserErrorResponse;
 import by.youngliqui.EShopProject.exceptions.UserNotAuthorizeException;
 import by.youngliqui.EShopProject.exceptions.UserNotCreatedException;
 import by.youngliqui.EShopProject.models.User;
@@ -11,6 +10,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
@@ -24,13 +24,12 @@ import java.util.stream.Collectors;
 @RequestMapping("/users")
 public class UserController {
     private final UserService userService;
-
     @Autowired
     public UserController(UserService userService) {
         this.userService = userService;
     }
-
     @GetMapping
+    //@PreAuthorize("hasAnyAuthority('ADMIN', 'MANAGER')")
     public UsersResponse getUsers() {
         return new UsersResponse(userService.getAll().stream()
                 .map(this::convertToUserDTO)
@@ -38,7 +37,7 @@ public class UserController {
         );
     }
 
-
+    //@PreAuthorize("hasAnyAuthority('ADMIN', 'MANAGER')")
     @PostMapping("/new")
     public ResponseEntity<HttpStatus> saveUser(@RequestBody @Valid UserDTO userDTO,
                                                BindingResult bindingResult) {
@@ -63,7 +62,6 @@ public class UserController {
             throw new UserNotCreatedException(errorMsg.toString());
         }
     }
-
     @GetMapping("/profile")
     public UserDTO profileUser(Principal principal) {
         if (principal == null) {

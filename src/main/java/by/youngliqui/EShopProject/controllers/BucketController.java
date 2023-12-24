@@ -13,7 +13,6 @@ import java.security.Principal;
 @RequestMapping("/bucket")
 public class BucketController {
     private final BucketService bucketService;
-
     @Autowired
     public BucketController(BucketService bucketService) {
         this.bucketService = bucketService;
