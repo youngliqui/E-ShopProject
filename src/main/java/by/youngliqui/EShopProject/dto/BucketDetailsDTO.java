@@ -15,7 +15,7 @@ import java.math.BigDecimal;
 @Builder
 public class BucketDetailsDTO {
     private String title;
-    private Long productId;
+    //private Long productId;
     private BigDecimal price;
     private BigDecimal amount;
     private Double sum;
@@ -24,5 +24,7 @@ public class BucketDetailsDTO {
         this.title = product.getTitle();
         this.amount = new BigDecimal("1.0");
         this.sum = Double.valueOf(product.getPrice().toString());
+        //this.productId = product.getId();
+        this.price = product.getPrice();
     }
 }

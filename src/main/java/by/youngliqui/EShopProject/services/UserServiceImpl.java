@@ -24,7 +24,6 @@ import java.util.Objects;
 @Transactional(readOnly = true)
 public class UserServiceImpl implements UserService, UserDetailsService {
     private final UserRepository userRepository;
-
     private final PasswordEncoder passwordEncoder;
 
     @Autowired
@@ -42,7 +41,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
         User user = User.builder()
                 .name(userDTO.getUsername())
-                .password(userDTO.getPassword())
+                .password(passwordEncoder.encode(userDTO.getPassword()))
                 .email(userDTO.getEmail())
                 .role(Role.CLIENT)
                 .build();

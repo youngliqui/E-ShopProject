@@ -29,7 +29,7 @@ public class UserController {
         this.userService = userService;
     }
     @GetMapping
-    //@PreAuthorize("hasAnyAuthority('ADMIN', 'MANAGER')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'MANAGER')")
     public UsersResponse getUsers() {
         return new UsersResponse(userService.getAll().stream()
                 .map(this::convertToUserDTO)
@@ -37,7 +37,7 @@ public class UserController {
         );
     }
 
-    //@PreAuthorize("hasAnyAuthority('ADMIN', 'MANAGER')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'MANAGER')")
     @PostMapping("/new")
     public ResponseEntity<HttpStatus> saveUser(@RequestBody @Valid UserDTO userDTO,
                                                BindingResult bindingResult) {
