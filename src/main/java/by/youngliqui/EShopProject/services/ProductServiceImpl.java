@@ -3,6 +3,7 @@ package by.youngliqui.EShopProject.services;
 import by.youngliqui.EShopProject.dto.ProductDTO;
 import by.youngliqui.EShopProject.mappers.ProductMapper;
 import by.youngliqui.EShopProject.models.Bucket;
+import by.youngliqui.EShopProject.models.Product;
 import by.youngliqui.EShopProject.models.User;
 import by.youngliqui.EShopProject.repositories.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,5 +50,16 @@ public class ProductServiceImpl implements ProductService{
         } else {
             bucketService.addProducts(bucket, Collections.singletonList(productId));
         }
+    }
+
+    @Override
+    public boolean save(ProductDTO productDTO) {
+        Product product = Product.builder()
+                .title(productDTO.getTitle())
+                .price(productDTO.getPrice())
+                .build();
+        productRepository.save(product);
+
+        return true;
     }
 }

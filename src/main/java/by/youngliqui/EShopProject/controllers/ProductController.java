@@ -2,6 +2,8 @@ package by.youngliqui.EShopProject.controllers;
 
 import by.youngliqui.EShopProject.dto.ProductDTO;
 import by.youngliqui.EShopProject.dto.ProductsResponse;
+import by.youngliqui.EShopProject.exceptions.ProductNotCreatedException;
+import by.youngliqui.EShopProject.exceptions.UserNotCreatedException;
 import by.youngliqui.EShopProject.services.ProductService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,9 +11,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.util.List;
 
 @RestController
 @RequestMapping("/products")
@@ -33,8 +37,26 @@ public class ProductController {
     @PreAuthorize("hasAnyAuthority('ADMIN', 'MANAGER')")
     public ResponseEntity<HttpStatus> add(@RequestBody @Valid ProductDTO productDTO,
                                           BindingResult bindingResult) {
-        // implements adding new product function
-        return null;
+        StringBuilder errorMsg = new StringBuilder();
+
+        if (bindingResult.hasErrors()) {
+            List<FieldError> errors = bindingResult.getFieldErrors();
+            for (FieldError error : errors) {
+                errorMsg
+                        .append(error.getField())
+                        .append(" - ")
+                        .append(error.getDefaultMessage())
+                        .append(";");
+            }
+
+            throw new ProductNotCreatedException(errorMsg.toString());
+        }
+
+        if (productService.save(productDTO)) {
+            return ResponseEntity.ok(HttpStatus.OK);
+        } else {
+            throw new ProductNotCreatedException(errorMsg.toString());
+        }
     }
 
     @GetMapping("/{id}/bucket")
