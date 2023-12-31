@@ -53,13 +53,8 @@ public class ProductServiceImpl implements ProductService{
     }
 
     @Override
-    public boolean save(ProductDTO productDTO) {
-        Product product = Product.builder()
-                .title(productDTO.getTitle())
-                .price(productDTO.getPrice())
-                .build();
+    public void addProduct(ProductDTO productDTO) {
+        Product product = productMapper.toProduct(productDTO);
         productRepository.save(product);
-
-        return true;
     }
 }

@@ -3,7 +3,6 @@ package by.youngliqui.EShopProject.controllers;
 import by.youngliqui.EShopProject.dto.ProductDTO;
 import by.youngliqui.EShopProject.dto.ProductsResponse;
 import by.youngliqui.EShopProject.exceptions.ProductNotCreatedException;
-import by.youngliqui.EShopProject.exceptions.UserNotCreatedException;
 import by.youngliqui.EShopProject.services.ProductService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,8 +34,8 @@ public class ProductController {
 
     @PostMapping("/new")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'MANAGER')")
-    public ResponseEntity<HttpStatus> add(@RequestBody @Valid ProductDTO productDTO,
-                                          BindingResult bindingResult) {
+    public ResponseEntity<HttpStatus> addProduct(@RequestBody @Valid ProductDTO productDTO,
+                                                 BindingResult bindingResult) {
         StringBuilder errorMsg = new StringBuilder();
 
         if (bindingResult.hasErrors()) {
@@ -52,11 +51,8 @@ public class ProductController {
             throw new ProductNotCreatedException(errorMsg.toString());
         }
 
-        if (productService.save(productDTO)) {
-            return ResponseEntity.ok(HttpStatus.OK);
-        } else {
-            throw new ProductNotCreatedException(errorMsg.toString());
-        }
+        productService.addProduct(productDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @GetMapping("/{id}/bucket")

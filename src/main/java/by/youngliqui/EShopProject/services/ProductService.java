@@ -7,5 +7,5 @@ import java.util.List;
 public interface ProductService {
     List<ProductDTO> getAll();
     void addToUserBucket(Long productId, String username);
-    boolean save(ProductDTO productDTO);
+    void addProduct(ProductDTO productDTO);
 }
