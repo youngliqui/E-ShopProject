@@ -2,9 +2,8 @@ package by.youngliqui.EShopProject.services;
 
 import by.youngliqui.EShopProject.dto.BucketDTO;
 import by.youngliqui.EShopProject.dto.BucketDetailsDTO;
-import by.youngliqui.EShopProject.models.Bucket;
-import by.youngliqui.EShopProject.models.Product;
-import by.youngliqui.EShopProject.models.User;
+import by.youngliqui.EShopProject.exceptions.UserNotFoundException;
+import by.youngliqui.EShopProject.models.*;
 import by.youngliqui.EShopProject.repositories.BucketRepository;
 import by.youngliqui.EShopProject.repositories.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -83,5 +82,40 @@ public class BucketServiceImpl implements BucketService {
         bucketDTO.aggregate();
 
         return bucketDTO;
+    }
+
+    @Override
+    @Transactional
+    public void commitBucketToOrder(String username) {
+        User user = userService.findByName(username);
+        if (user == null) {
+            throw new UserNotFoundException("User with name: " + username + " is not found!");
+        }
+
+        Bucket bucket = user.getBucket();
+        if (bucket == null || bucket.getProducts().isEmpty()) {
+            return;
+        }
+
+        Order order = new Order();
+        order.setStatus(OrderStatus.NEW);
+        order.setUser(user);
+
+        Map<Product, Long> productWithAmount = bucket.getProducts().stream()
+                .collect(Collectors.groupingBy(product -> product, Collectors.counting()));
+        
+        List<OrderDetails> orderDetails = productWithAmount.entrySet().stream()
+                .map(pair -> new OrderDetails(order, pair.getKey(), pair.getValue()))
+                .toList();
+
+        BigDecimal total = new BigDecimal(orderDetails.stream()
+                .map(detail -> detail.getPrice().multiply(detail.getAmount()))
+                .mapToDouble(BigDecimal::doubleValue).sum());
+
+        order.setDetails(orderDetails);
+        order.setSum(total);
+        order.setAddress("none");
+
+        orderService.saveOrder(order);
     }
 }

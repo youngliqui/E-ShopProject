@@ -4,7 +4,10 @@ import by.youngliqui.EShopProject.dto.BucketDTO;
 import by.youngliqui.EShopProject.models.Bucket;
 import by.youngliqui.EShopProject.services.BucketService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -26,5 +29,15 @@ public class BucketController {
         } else {
             return bucketService.getBucketByUser(principal.getName());
         }
+    }
+
+    @PostMapping
+    public ResponseEntity<HttpStatus> commitBucket(Principal principal) {
+        if (principal != null) {
+            bucketService.commitBucketToOrder(principal.getName());
+            return ResponseEntity.ok(HttpStatus.OK);
+        }
+
+        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }
 }
