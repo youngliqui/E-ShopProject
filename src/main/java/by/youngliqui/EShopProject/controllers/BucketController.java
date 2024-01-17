@@ -1,7 +1,6 @@
 package by.youngliqui.EShopProject.controllers;
 
 import by.youngliqui.EShopProject.dto.BucketDTO;
-import by.youngliqui.EShopProject.models.Bucket;
 import by.youngliqui.EShopProject.services.BucketService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

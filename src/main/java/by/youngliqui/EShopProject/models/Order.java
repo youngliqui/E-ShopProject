@@ -39,7 +39,7 @@ public class Order {
 
     private String address;
 
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "order")
     private List<OrderDetails> details;
 
     @Enumerated(EnumType.STRING)

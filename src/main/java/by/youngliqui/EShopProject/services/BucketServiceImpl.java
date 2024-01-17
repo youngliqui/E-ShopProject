@@ -5,6 +5,7 @@ import by.youngliqui.EShopProject.dto.BucketDetailsDTO;
 import by.youngliqui.EShopProject.exceptions.UserNotFoundException;
 import by.youngliqui.EShopProject.models.*;
 import by.youngliqui.EShopProject.repositories.BucketRepository;
+import by.youngliqui.EShopProject.repositories.OrderDetailsRepository;
 import by.youngliqui.EShopProject.repositories.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,12 +23,16 @@ import java.util.stream.Collectors;
 public class BucketServiceImpl implements BucketService {
     private final BucketRepository bucketRepository;
     private final ProductRepository productRepository;
+    private final OrderDetailsRepository orderDetailsRepository;
+    private final OrderService orderService;
     private final UserService userService;
 
     @Autowired
-    public BucketServiceImpl(BucketRepository bucketRepository, ProductRepository productRepository, UserService userService) {
+    public BucketServiceImpl(BucketRepository bucketRepository, ProductRepository productRepository, OrderDetailsRepository orderDetailsRepository, OrderService orderService, UserService userService) {
         this.bucketRepository = bucketRepository;
         this.productRepository = productRepository;
+        this.orderDetailsRepository = orderDetailsRepository;
+        this.orderService = orderService;
         this.userService = userService;
     }
 
@@ -117,5 +122,9 @@ public class BucketServiceImpl implements BucketService {
         order.setAddress("none");
 
         orderService.saveOrder(order);
+        //orderDetailsRepository.saveAll(orderDetails);
+
+        bucket.getProducts().clear();
+        bucketRepository.save(bucket);
     }
 }
