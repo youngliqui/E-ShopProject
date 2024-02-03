@@ -1,21 +1,21 @@
 package by.youngliqui.EShopProject.services;
 
+import by.youngliqui.EShopProject.dto.UserDTO;
 import by.youngliqui.EShopProject.models.User;
 import by.youngliqui.EShopProject.repositories.UserRepository;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class UserServiceImplTest {
@@ -45,7 +45,7 @@ class UserServiceImplTest {
         String name = "petr";
         User expectedUser = User.builder().build();
 
-        doReturn(expectedUser).when(userRepository).findFirstByName(Mockito.eq(name));
+        doReturn(expectedUser).when(userRepository).findFirstByName(eq(name));
 
         User actualUser = userService.findByName(name);
         User randomUser = userService.findByName(UUID.randomUUID().toString());
@@ -54,5 +54,33 @@ class UserServiceImplTest {
         assertThat(actualUser).isEqualTo(expectedUser);
 
         assertThat(randomUser).isNull();
+    }
+
+    @Test
+    void checkSaveIncorrectPassword() {
+        UserDTO userDTO = UserDTO.builder()
+                .password("pass")
+                .matchingPassword("dummy")
+                .build();
+
+        assertThrows(RuntimeException.class, () -> userService.save(userDTO));
+    }
+
+    @Test
+    void checkSave() {
+        UserDTO userDTO = UserDTO.builder()
+                .username("name")
+                .password("pass")
+                .matchingPassword("pass")
+                .email("email@gmail.com")
+                .build();
+
+        doReturn("pass").when(passwordEncoder).encode(anyString());
+
+        boolean result = userService.save(userDTO);
+
+        assertThat(result).isTrue();
+        verify(passwordEncoder).encode(anyString());
+        verify(userRepository).save(any());
     }
 }

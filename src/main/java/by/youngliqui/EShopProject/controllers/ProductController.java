@@ -66,4 +66,9 @@ public class ProductController {
         return ResponseEntity.ok(HttpStatus.OK);
     }
 
+    @GetMapping("/{id}")
+    @ResponseBody
+    public ProductDTO getById(@PathVariable Long id) {
+        return productService.getById(id);
+    }
 }
