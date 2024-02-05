@@ -12,10 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -26,7 +23,6 @@ public class BucketServiceImpl implements BucketService {
     private final OrderDetailsRepository orderDetailsRepository;
     private final OrderService orderService;
     private final UserService userService;
-
     @Autowired
     public BucketServiceImpl(BucketRepository bucketRepository, ProductRepository productRepository, OrderDetailsRepository orderDetailsRepository, OrderService orderService, UserService userService) {
         this.bucketRepository = bucketRepository;
@@ -43,7 +39,9 @@ public class BucketServiceImpl implements BucketService {
         bucket.setUser(user);
         List<Product> productList = getCollectRefProductsByIds(productsIds);
         bucket.setProducts(productList);
-        return bucketRepository.save(bucket);
+        bucketRepository.save(bucket);
+
+        return bucket;
     }
 
     private List<Product> getCollectRefProductsByIds(List<Long> productsIds) {
@@ -108,12 +106,12 @@ public class BucketServiceImpl implements BucketService {
 
         Map<Product, Long> productWithAmount = bucket.getProducts().stream()
                 .collect(Collectors.groupingBy(product -> product, Collectors.counting()));
-        
+
         List<OrderDetails> orderDetails = productWithAmount.entrySet().stream()
                 .map(pair -> new OrderDetails(order, pair.getKey(), pair.getValue()))
                 .toList();
 
-        BigDecimal total = new BigDecimal(orderDetails.stream()
+        BigDecimal total = BigDecimal.valueOf(orderDetails.stream()
                 .map(detail -> detail.getPrice().multiply(detail.getAmount()))
                 .mapToDouble(BigDecimal::doubleValue).sum());
 
