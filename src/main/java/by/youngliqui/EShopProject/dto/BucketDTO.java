@@ -11,7 +11,6 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class BucketDTO {
     private int amountProducts;
     private Double sum;

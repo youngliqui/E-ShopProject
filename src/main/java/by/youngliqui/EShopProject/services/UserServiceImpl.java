@@ -70,7 +70,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     public void updateProfile(UserDTO userDTO) {
         User savedUser = userRepository.findFirstByName(userDTO.getUsername());
         if (savedUser == null) {
-            throw new RuntimeException("user not found by name " + userDTO.getUsername());
+            throw new UsernameNotFoundException("User not found with name " + userDTO.getUsername());
         }
 
         boolean isChanged = false;

@@ -14,6 +14,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Arrays;
@@ -22,6 +23,7 @@ import java.util.UUID;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
@@ -138,18 +140,107 @@ class UserServiceImplTest {
         var actualResult = userService.loadUserByUsername(user.getName());
 
         assertThat(actualResult).isNotNull();
-        verify(userRepository).findFirstByName(Mockito.anyString());
+        verify(userRepository).findFirstByName(anyString());
         assertThat(actualResult.getUsername()).isEqualTo(user.getName());
         assertThat(actualResult.getPassword()).isEqualTo(user.getPassword());
         assertThat(actualResult.getAuthorities())
                 .extracting(GrantedAuthority::getAuthority).contains(user.getRole().name());
     }
 
+    @Test
+    void throwExceptionIfUsernameIsNotFound() {
+        doReturn(null).when(userRepository).findFirstByName(anyString());
+
+        assertAll(() -> {
+                    String username = "dummy";
+                    var exception = assertThrows(
+                            UsernameNotFoundException.class, () -> userService.loadUserByUsername(username)
+                    );
+                    assertThat(exception.getMessage()).isEqualTo("User not found with name " + username);
+                }
+        );
+    }
+
+    @Test
+    void changeUserProfileIfUserDTOIsCorrect() {
+        UserDTO userDTO = UserDTO.builder()
+                .username("testUser")
+                .password("changed")
+                .matchingPassword("changed")
+                .email("changed@gmail.com")
+                .build();
+
+        User user = User.builder()
+                .name("testUser")
+                .id(10L)
+                .email("test@mail.com")
+                .role(Role.CLIENT)
+                .password("pass")
+                .build();
+
+        doReturn(user).when(userRepository).findFirstByName(anyString());
+        doReturn(userDTO.getPassword()).when(passwordEncoder).encode(anyString());
+
+        userService.updateProfile(userDTO);
+
+        assertAll(() -> {
+            assertThat(user.getPassword()).isEqualTo(userDTO.getPassword());
+            assertThat(user.getEmail()).isEqualTo(userDTO.getEmail());
+            assertThat(user.getRole()).isEqualTo(Role.CLIENT);
+            assertThat(user.getId()).isEqualTo(10L);
+        });
+        verify(userRepository).findFirstByName(anyString());
+        verify(userRepository).save(Mockito.eq(user));
+        verify(passwordEncoder).encode(anyString());
+    }
+
+    @Test
+    void throwExceptionIfUserByNameIsNotFound() {
+        doReturn(null).when(userRepository).findFirstByName(anyString());
+
+        assertAll(() -> {
+            String username = "dummy";
+            var exception = assertThrows(UsernameNotFoundException.class, () ->
+                    userService.updateProfile(UserDTO.builder().username(username).build()));
+            assertThat(exception.getMessage()).isEqualTo("User not found with name " + username);
+        });
+    }
+
+    @Test
+    void doNotChangeUserProfileIfPassNullAndEmailsEqual() {
+        UserDTO userDTO = UserDTO.builder()
+                .username("name")
+                .email("email")
+                .build();
+
+        User user = User.builder()
+                .name("name")
+                .email("email")
+                .build();
+
+        doReturn(user).when(userRepository).findFirstByName(anyString());
+
+        userService.updateProfile(userDTO);
+
+        assertAll(() -> {
+            assertThat(user.getEmail()).isEqualTo(userDTO.getEmail());
+            assertThat(user.getPassword()).isNull();
+            assertThat(user.getName()).isEqualTo(userDTO.getUsername());
+        });
+        verify(userRepository).findFirstByName(anyString());
+        verify(userRepository, Mockito.times(0)).save(any());
+        verify(passwordEncoder, Mockito.times(0)).encode(anyString());
+    }
+
+
     private static Stream<Arguments> getUsers() {
         return Stream.of(
-                Arguments.of(new User(1L, "user1", "pass1", "user1@gmail.com", false, Role.CLIENT, null, null)),
-                Arguments.of(new User(2L, "user2", "pass2", "user2@gmail.com", false, Role.MANAGER, null, null)),
-                Arguments.of(new User(3L, "user3", "pass3", "user3@gmail.com", true, Role.ADMIN, null, null))
+                Arguments.of(new User(1L, "user1", "pass1", "user1@gmail.com",
+                        false, Role.CLIENT, null, null)),
+                Arguments.of(new User(2L, "user2", "pass2", "user2@gmail.com",
+                        false, Role.MANAGER, null, null)),
+                Arguments.of(new User(3L, "user3", "pass3", "user3@gmail.com",
+                        true, Role.ADMIN, null, null))
         );
     }
 }
