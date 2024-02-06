@@ -92,7 +92,7 @@ public class BucketServiceImpl implements BucketService {
     public void commitBucketToOrder(String username) {
         User user = userService.findByName(username);
         if (user == null) {
-            throw new UserNotFoundException("User with name: " + username + " is not found!");
+            throw new UserNotFoundException("User with name: " + username + " is not found");
         }
 
         Bucket bucket = user.getBucket();
@@ -120,7 +120,6 @@ public class BucketServiceImpl implements BucketService {
         order.setAddress("none");
 
         orderService.saveOrder(order);
-        //orderDetailsRepository.saveAll(orderDetails);
 
         bucket.getProducts().clear();
         bucketRepository.save(bucket);

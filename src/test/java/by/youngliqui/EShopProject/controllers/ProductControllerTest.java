@@ -4,11 +4,9 @@ import by.youngliqui.EShopProject.dto.ProductDTO;
 import by.youngliqui.EShopProject.services.ProductService;
 import by.youngliqui.EShopProject.services.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.BDDMockito;
 import org.mockito.InjectMocks;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -80,8 +78,8 @@ class ProductControllerTest {
     @WithMockUser(username = "user", roles = "USER")
     void checkProductById() throws Exception {
         mockMvc.perform(
-                MockMvcRequestBuilders.get("/products/{id}", dtoById.getId())
-                        .accept(MediaType.APPLICATION_JSON))
+                        MockMvcRequestBuilders.get("/products/{id}", dtoById.getId())
+                                .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(dtoById.getId()))
                 .andExpect(jsonPath("$.title").value(dtoById.getTitle()))

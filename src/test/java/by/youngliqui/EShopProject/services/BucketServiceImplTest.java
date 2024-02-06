@@ -2,10 +2,8 @@ package by.youngliqui.EShopProject.services;
 
 import by.youngliqui.EShopProject.dto.BucketDTO;
 import by.youngliqui.EShopProject.dto.BucketDetailsDTO;
-import by.youngliqui.EShopProject.models.Bucket;
-import by.youngliqui.EShopProject.models.Product;
-import by.youngliqui.EShopProject.models.Role;
-import by.youngliqui.EShopProject.models.User;
+import by.youngliqui.EShopProject.exceptions.UserNotFoundException;
+import by.youngliqui.EShopProject.models.*;
 import by.youngliqui.EShopProject.repositories.BucketRepository;
 import by.youngliqui.EShopProject.repositories.ProductRepository;
 import org.junit.jupiter.api.Test;
@@ -16,14 +14,15 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 
@@ -138,5 +137,47 @@ class BucketServiceImplTest {
 
         assertThat(bucketDTO).isNotNull();
         assertThat(bucketDTO).isEqualTo(new BucketDTO());
+    }
+
+    @Test
+    void checkCommitBucketToOrder() {
+        Bucket bucket = Bucket.builder()
+                .id(10L)
+                .products(new ArrayList<>(Arrays.asList(product1, product2)))
+                .build();
+
+        User user = User.builder()
+                .id(10L)
+                .name("name")
+                .email("email")
+                .password("pass")
+                .bucket(bucket)
+                .build();
+
+        bucket.setUser(user);
+
+        doReturn(user).when(userService).findByName(user.getName());
+
+        bucketService.commitBucketToOrder(user.getName());
+
+        verify(userService).findByName(user.getName());
+        verify(orderService).saveOrder(any(Order.class));
+        verify(bucketRepository).save(bucket);
+        assertThat(bucket.getProducts()).hasSize(0);
+    }
+
+    @Test
+    void throwExceptionCommitBucketIfUserNotFound() {
+        String username = "dummy";
+        doReturn(null).when(userService).findByName(username);
+
+        assertAll(() -> {
+                    var exception = assertThrows(UserNotFoundException.class,
+                            () -> bucketService.commitBucketToOrder(username));
+                    assertThat(exception.getMessage())
+                            .isEqualTo("User with name: " + username + " is not found");
+                }
+        );
+        verify(userService).findByName(username);
     }
 }
