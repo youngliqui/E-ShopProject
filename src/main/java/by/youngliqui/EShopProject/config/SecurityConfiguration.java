@@ -45,7 +45,8 @@ public class SecurityConfiguration {
                                 .clearAuthentication(true)
                                 .logoutSuccessUrl("/").deleteCookies("JSESSONID")
                                 .invalidateHttpSession(true)
-                );
+                )
+                .cors(AbstractHttpConfigurer::disable);
 
         return http.build();
     }

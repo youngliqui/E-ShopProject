@@ -11,14 +11,22 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.verify;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -27,6 +35,7 @@ public class BucketControllerIT {
     private TestRestTemplate testRestTemplate;
     @Autowired
     private UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     private List<Product> products = new ArrayList<>(List.of(Product.builder()
                     .id(1L)
@@ -39,17 +48,15 @@ public class BucketControllerIT {
                     .price(BigDecimal.valueOf(12.12))
                     .build()));
     private User user = User.builder()
-            .id(1L)
             .name("test")
-            .password("test")
+            .password(passwordEncoder.encode("test"))
             .email("email@gmail.com")
-            .role(Role.CLIENT)
-            .archive(false)
+            .role(Role.ADMIN)
             .build();
 
     @BeforeEach
     void setUp() {
-        user.setBucket(new Bucket(5L, user, products));
+        user.setBucket(new Bucket(1L, user, products));
         userRepository.save(user);
     }
 
@@ -57,7 +64,14 @@ public class BucketControllerIT {
     void testCommitBucket() {
         ResponseEntity<Void> response = testRestTemplate.withBasicAuth("test", "test")
                 .postForEntity("/bucket", null, Void.class);
-        Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+    }
+
+    @Test
+    void testCommitBucketIfUserIsNotAuthorized() {
+        ResponseEntity<Void> response = testRestTemplate.withBasicAuth("dummy", "dummy")
+                .postForEntity("/bucket", null, Void.class);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
     }
 
 }
