@@ -7,6 +7,7 @@ import by.youngliqui.EShopProject.models.Product;
 import by.youngliqui.EShopProject.models.User;
 import by.youngliqui.EShopProject.repositories.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,11 +40,11 @@ public class ProductServiceImpl implements ProductService{
     public void addToUserBucket(Long productId, String username) {
         User user = userService.findByName(username);
         if (user == null) {
-            throw new RuntimeException("user not fount with name - " + username);
+            throw new UsernameNotFoundException("user not fount with name - " + username);
         }
 
         Bucket bucket = user.getBucket();
-        if (bucket == null) {
+        if (bucket == null || bucket.getProducts().isEmpty()) {
             Bucket newBucket = bucketService.createBucket(user, Collections.singletonList(productId));
             user.setBucket(newBucket);
             userService.save(user);
