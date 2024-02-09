@@ -29,18 +29,20 @@ class ProductControllerIT {
     @MockBean
     private ProductService productService;
     private final ProductDTO expectedProduct = ProductDTO.builder()
-            .id(99L)
+            .id(10L)
             .title("Test product")
             .price(BigDecimal.valueOf(999.99))
             .build();
 
     @BeforeEach
     void setUp() {
-        given(productService.getById(expectedProduct.getId())).willReturn(expectedProduct);
+
     }
 
     @Test
     void getById() {
+        given(productService.getById(expectedProduct.getId())).willReturn(expectedProduct);
+
         ResponseEntity<ProductDTO> entity =
                 testRestTemplate.getForEntity("/products/" + expectedProduct.getId(), ProductDTO.class);
 

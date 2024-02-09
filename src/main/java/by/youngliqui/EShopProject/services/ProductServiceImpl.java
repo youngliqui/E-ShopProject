@@ -40,11 +40,11 @@ public class ProductServiceImpl implements ProductService{
     public void addToUserBucket(Long productId, String username) {
         User user = userService.findByName(username);
         if (user == null) {
-            throw new UsernameNotFoundException("user not fount with name - " + username);
+            throw new UsernameNotFoundException("user not found with name: " + username);
         }
 
         Bucket bucket = user.getBucket();
-        if (bucket == null || bucket.getProducts().isEmpty()) {
+        if (bucket == null) {
             Bucket newBucket = bucketService.createBucket(user, Collections.singletonList(productId));
             user.setBucket(newBucket);
             userService.save(user);
