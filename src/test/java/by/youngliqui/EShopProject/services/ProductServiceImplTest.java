@@ -1,14 +1,13 @@
 package by.youngliqui.EShopProject.services;
 
 import by.youngliqui.EShopProject.dto.ProductDTO;
-import by.youngliqui.EShopProject.models.Category;
-import by.youngliqui.EShopProject.models.Product;
-import by.youngliqui.EShopProject.models.Size;
+import by.youngliqui.EShopProject.models.*;
 import by.youngliqui.EShopProject.repositories.ProductRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
@@ -22,8 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class ProductServiceImplTest {
@@ -112,7 +110,19 @@ class ProductServiceImplTest {
 
     @Test
     void checkAddToUserBucketIfBucketIsNull() {
+        User user = User.builder()
+                .id(1L)
+                .name("username")
+                .bucket(null)
+                .build();
 
+        doReturn(user).when(userService).findByName(user.getName());
+
+        productService.addToUserBucket(product1.getId(), user.getName());
+
+        verify(userService).findByName(user.getName());
+        verify(bucketService).createBucket(user, Collections.singletonList(product1.getId()));
+        verify(userService).save(Mockito.eq(user));
     }
 
     @Test
@@ -130,6 +140,20 @@ class ProductServiceImplTest {
 
     @Test
     void checkAddToUserBucketIfBucketNotNull() {
+        User user = User.builder()
+                .id(1L)
+                .name("username")
+                .build();
+        Bucket bucket = Bucket.builder()
+                .id(10L)
+                .build();
+        user.setBucket(bucket);
 
+        doReturn(user).when(userService).findByName(user.getName());
+
+        productService.addToUserBucket(product1.getId(), user.getName());
+
+        verify(userService).findByName(user.getName());
+        verify(bucketService).addProducts(bucket, Collections.singletonList(product1.getId()));
     }
 }
