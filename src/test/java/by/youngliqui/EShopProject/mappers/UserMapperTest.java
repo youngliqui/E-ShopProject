@@ -54,6 +54,7 @@ class UserMapperTest {
                 .username(user.getName())
                 .email(user.getEmail())
                 .password(user.getPassword())
+                .matchingPassword(user.getPassword())
                 .build();
 
         var actualResult = mapper.fromUser(user);
@@ -76,5 +77,21 @@ class UserMapperTest {
         assertThat(actualResult.get(0)).isInstanceOf(User.class);
         assertThat(actualResult).hasSize(1);
         assertThat(actualResult).containsAnyElementsOf(expectedUser);
+    }
+
+    @Test
+    void checkConvertListOfUsersToListOfUserDTOs() {
+        List<UserDTO> expectedDTOs = new ArrayList<>(Collections.singletonList(UserDTO.builder()
+                .username(user.getName())
+                .password(user.getPassword())
+                .matchingPassword(user.getPassword())
+                .email(user.getEmail())
+                .build()));
+
+        var actualResult = mapper.fromUsersList(Collections.singletonList(user));
+
+        assertThat(actualResult.get(0)).isInstanceOf(UserDTO.class);
+        assertThat(actualResult).hasSize(1);
+        assertThat(actualResult).containsAnyElementsOf(expectedDTOs);
     }
 }

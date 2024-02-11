@@ -18,11 +18,13 @@ public interface UserMapper {
 
     @InheritInverseConfiguration
     @Mapping(source = "name", target = "username")
+    @Mapping(source = "password", target = "matchingPassword")
     UserDTO fromUser(User user);
 
     @Mapping(source = "username", target = "name")
     List<User> toUsersList(List<UserDTO> userDTOS);
 
     @Mapping(source = "name", target = "username")
+    @Mapping(source = "password", target = "matchingPassword")
     List<UserDTO> fromUsersList(List<User> usersList);
 }

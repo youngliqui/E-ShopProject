@@ -16,7 +16,7 @@ import java.util.List;
 
 @Service
 @Transactional(readOnly = true)
-public class ProductServiceImpl implements ProductService{
+public class ProductServiceImpl implements ProductService {
     private final ProductRepository productRepository;
     private final ProductMapper productMapper = ProductMapper.MAPPER;
 

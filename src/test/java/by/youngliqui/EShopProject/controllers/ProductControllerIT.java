@@ -36,13 +36,11 @@ class ProductControllerIT {
 
     @BeforeEach
     void setUp() {
-
+        given(productService.getById(expectedProduct.getId())).willReturn(expectedProduct);
     }
 
     @Test
     void getById() {
-        given(productService.getById(expectedProduct.getId())).willReturn(expectedProduct);
-
         ResponseEntity<ProductDTO> entity =
                 testRestTemplate.getForEntity("/products/" + expectedProduct.getId(), ProductDTO.class);
 

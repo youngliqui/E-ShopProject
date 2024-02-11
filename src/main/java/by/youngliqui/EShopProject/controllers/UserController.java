@@ -4,6 +4,7 @@ import by.youngliqui.EShopProject.dto.UserDTO;
 import by.youngliqui.EShopProject.dto.UsersResponse;
 import by.youngliqui.EShopProject.exceptions.UserNotAuthorizeException;
 import by.youngliqui.EShopProject.exceptions.UserNotCreatedException;
+import by.youngliqui.EShopProject.mappers.UserMapper;
 import by.youngliqui.EShopProject.models.User;
 import by.youngliqui.EShopProject.services.UserService;
 import jakarta.validation.Valid;
@@ -25,15 +26,18 @@ import java.util.stream.Collectors;
 @RequestMapping("/users")
 public class UserController {
     private final UserService userService;
+    private final UserMapper userMapper = UserMapper.MAPPER;
+
     @Autowired
     public UserController(UserService userService) {
         this.userService = userService;
     }
+
     @GetMapping
     @PreAuthorize("hasAnyAuthority('ADMIN', 'MANAGER')")
     public UsersResponse getUsers() {
         return new UsersResponse(userService.getAll().stream()
-                .map(this::convertToUserDTO)
+                .map(userMapper::fromUser)
                 .collect(Collectors.toList())
         );
     }
@@ -87,32 +91,21 @@ public class UserController {
     }
 
     @PostMapping("/profile")
-    public ResponseEntity<UserDTO> updateProfileUser(@RequestBody @Valid UserDTO dto,
-                                                        BindingResult bindingResult,
-                                                        Principal principal) {
+    public ResponseEntity<HttpStatus> updateProfileUser(@RequestBody @Valid UserDTO dto,
+                                                     BindingResult bindingResult,
+                                                     Principal principal) {
 
-        if (principal == null || !Objects.equals(principal.getName(), dto.getUsername())) {
+        if (principal == null) {
             throw new UserNotAuthorizeException("You are not authorize");
         }
         if (dto.getPassword() != null
                 && !dto.getPassword().isEmpty()
                 && !Objects.equals(dto.getPassword(), dto.getMatchingPassword())) {
 
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(dto); // add message
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN); // add message
         }
 
-        userService.updateProfile(dto);
-        return ResponseEntity.ok(dto);
-    }
-
-    private User convertToUser(UserDTO userDTO) {
-        return null;
-    }
-
-    private UserDTO convertToUserDTO(User user) {
-        return UserDTO.builder()
-                .username(user.getName())
-                .email(user.getEmail())
-                .build();
+        userService.updateProfile(dto, principal.getName());
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

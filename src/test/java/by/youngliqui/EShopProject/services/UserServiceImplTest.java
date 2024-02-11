@@ -164,7 +164,7 @@ class UserServiceImplTest {
     @Test
     void changeUserProfileIfUserDTOIsCorrect() {
         UserDTO userDTO = UserDTO.builder()
-                .username("testUser")
+                .username("changed")
                 .password("changed")
                 .matchingPassword("changed")
                 .email("changed@gmail.com")
@@ -181,9 +181,10 @@ class UserServiceImplTest {
         doReturn(user).when(userRepository).findFirstByName(anyString());
         doReturn(userDTO.getPassword()).when(passwordEncoder).encode(anyString());
 
-        userService.updateProfile(userDTO);
+        userService.updateProfile(userDTO, user.getName());
 
         assertAll(() -> {
+            assertThat(user.getName()).isEqualTo(userDTO.getUsername());
             assertThat(user.getPassword()).isEqualTo(userDTO.getPassword());
             assertThat(user.getEmail()).isEqualTo(userDTO.getEmail());
             assertThat(user.getRole()).isEqualTo(Role.CLIENT);
@@ -201,13 +202,13 @@ class UserServiceImplTest {
         assertAll(() -> {
             String username = "dummy";
             var exception = assertThrows(UsernameNotFoundException.class, () ->
-                    userService.updateProfile(UserDTO.builder().username(username).build()));
+                    userService.updateProfile(UserDTO.builder().build(), username));
             assertThat(exception.getMessage()).isEqualTo("User not found with name " + username);
         });
     }
 
     @Test
-    void doNotChangeUserProfileIfPassNullAndEmailsEqual() {
+    void doNotChangeUserProfileIfPassAndNameNullAndEmailsEqual() {
         UserDTO userDTO = UserDTO.builder()
                 .username("name")
                 .email("email")
@@ -220,12 +221,12 @@ class UserServiceImplTest {
 
         doReturn(user).when(userRepository).findFirstByName(anyString());
 
-        userService.updateProfile(userDTO);
+        userService.updateProfile(userDTO, user.getName());
 
         assertAll(() -> {
             assertThat(user.getEmail()).isEqualTo(userDTO.getEmail());
             assertThat(user.getPassword()).isNull();
-            assertThat(user.getName()).isEqualTo(userDTO.getUsername());
+            assertThat(user.getName()).isEqualTo(user.getName());
         });
         verify(userRepository).findFirstByName(anyString());
         verify(userRepository, Mockito.times(0)).save(any());

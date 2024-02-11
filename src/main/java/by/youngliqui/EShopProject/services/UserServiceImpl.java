@@ -1,8 +1,8 @@
 package by.youngliqui.EShopProject.services;
 
+import by.youngliqui.EShopProject.dto.UserDTO;
 import by.youngliqui.EShopProject.models.Role;
 import by.youngliqui.EShopProject.models.User;
-import by.youngliqui.EShopProject.dto.UserDTO;
 import by.youngliqui.EShopProject.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
@@ -67,13 +67,19 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     @Override
     @Transactional
-    public void updateProfile(UserDTO userDTO) {
-        User savedUser = userRepository.findFirstByName(userDTO.getUsername());
+    public void updateProfile(UserDTO userDTO, String username) {
+        User savedUser = userRepository.findFirstByName(username);
         if (savedUser == null) {
-            throw new UsernameNotFoundException("User not found with name " + userDTO.getUsername());
+            throw new UsernameNotFoundException("User not found with name " + username);
         }
 
         boolean isChanged = false;
+        if (userDTO.getUsername() != null && !userDTO.getUsername().isEmpty()
+                && !Objects.equals(userDTO.getUsername(), savedUser.getName())) {
+            savedUser.setName(userDTO.getUsername());
+            isChanged = true;
+        }
+
         if (userDTO.getPassword() != null && !userDTO.getPassword().isEmpty()) {
             savedUser.setPassword(passwordEncoder.encode(userDTO.getPassword()));
             isChanged = true;
@@ -87,6 +93,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
             userRepository.save(savedUser);
         }
     }
+
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userRepository.findFirstByName(username);

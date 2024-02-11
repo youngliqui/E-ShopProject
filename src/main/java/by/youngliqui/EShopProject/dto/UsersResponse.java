@@ -1,7 +1,10 @@
 package by.youngliqui.EShopProject.dto;
 
+import lombok.NoArgsConstructor;
+
 import java.util.List;
 
+@NoArgsConstructor
 public class UsersResponse {
     private List<UserDTO> users;
 
