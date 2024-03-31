@@ -323,5 +323,6 @@ class UserControllerTestIT {
             System.out.println("get roles users after each");
             userRepository.deleteAllInBatch(List.of(IVAN, MAX, ADMIN, MANAGER));
         }
+
     }
 }

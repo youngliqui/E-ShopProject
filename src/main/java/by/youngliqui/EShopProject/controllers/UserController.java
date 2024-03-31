@@ -91,9 +91,9 @@ public class UserController {
     }
 
     @PostMapping("/profile")
-    public ResponseEntity<HttpStatus> updateProfileUser(@RequestBody @Valid UserDTO dto,
-                                                     BindingResult bindingResult,
-                                                     Principal principal) {
+    public ResponseEntity<String> updateProfileUser(@RequestBody @Valid UserDTO dto,
+                                                    BindingResult bindingResult,
+                                                    Principal principal) {
 
         if (principal == null) {
             throw new UserNotAuthorizeException("You are not authorize");
@@ -102,10 +102,10 @@ public class UserController {
                 && !dto.getPassword().isEmpty()
                 && !Objects.equals(dto.getPassword(), dto.getMatchingPassword())) {
 
-            return new ResponseEntity<>(HttpStatus.FORBIDDEN); // add message
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Password does not match");
         }
 
         userService.updateProfile(dto, principal.getName());
-        return new ResponseEntity<>(HttpStatus.OK);
+        return ResponseEntity.status(HttpStatus.OK).body(String.valueOf(HttpStatus.OK));
     }
 }
