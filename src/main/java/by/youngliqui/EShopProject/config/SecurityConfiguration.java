@@ -30,6 +30,10 @@ public class SecurityConfiguration {
                                 .requestMatchers("/users", "/users/new")
                                 .hasAnyAuthority(Role.ADMIN.name(), Role.MANAGER.name())
                                 .anyRequest().permitAll()
+                                //.requestMatchers("/api-docs/**", "/api-docs")
+                                //.permitAll()
+                                //.anyRequest()
+                                //.authenticated()
                 )
                 .httpBasic(Customizer.withDefaults()
                 ).formLogin(formLogin ->
