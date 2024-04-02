@@ -1,9 +1,6 @@
 package by.youngliqui.EShopProject.controllers;
 
-import by.youngliqui.EShopProject.exceptions.UserErrorResponse;
-import by.youngliqui.EShopProject.exceptions.UserNotAuthorizeException;
-import by.youngliqui.EShopProject.exceptions.UserNotCreatedException;
-import by.youngliqui.EShopProject.exceptions.UserNotFoundException;
+import by.youngliqui.EShopProject.exceptions.*;
 import org.apache.coyote.BadRequestException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -20,8 +17,8 @@ import java.util.stream.Collectors;
 @ControllerAdvice
 public class ErrorControllerAdvice extends ResponseEntityExceptionHandler {
     @ExceptionHandler(UserNotFoundException.class)
-    public ResponseEntity<UserErrorResponse> handleUserNotFoundException(UserNotFoundException ex) {
-        UserErrorResponse response = new UserErrorResponse(
+    public ResponseEntity<ErrorResponse> handleUserNotFoundException(UserNotFoundException ex) {
+        ErrorResponse response = new ErrorResponse(
                 ex.getMessage(),
                 System.currentTimeMillis()
         );
@@ -29,8 +26,8 @@ public class ErrorControllerAdvice extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(UserNotCreatedException.class)
-    public ResponseEntity<UserErrorResponse> handleUserNotCreatedException(UserNotCreatedException ex) {
-        UserErrorResponse response = new UserErrorResponse(
+    public ResponseEntity<ErrorResponse> handleUserNotCreatedException(UserNotCreatedException ex) {
+        ErrorResponse response = new ErrorResponse(
                 ex.getMessage(),
                 System.currentTimeMillis()
         );
@@ -38,8 +35,8 @@ public class ErrorControllerAdvice extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(UserNotAuthorizeException.class)
-    public ResponseEntity<UserErrorResponse> handleUserNotAuthorizeException(UserNotAuthorizeException ex) {
-        UserErrorResponse response = new UserErrorResponse(
+    public ResponseEntity<ErrorResponse> handleUserNotAuthorizeException(UserNotAuthorizeException ex) {
+        ErrorResponse response = new ErrorResponse(
                 ex.getMessage(),
                 System.currentTimeMillis()
         );
@@ -51,10 +48,29 @@ public class ErrorControllerAdvice extends ResponseEntityExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
     }
 
+    @ExceptionHandler(ProductNotFoundException.class)
+    public ResponseEntity<Object> handleProductNotFoundException(ProductNotFoundException ex) {
+        ErrorResponse response = new ErrorResponse(
+                ex.getMessage(),
+                System.currentTimeMillis()
+        );
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(ProductNotCreatedException.class)
+    public ResponseEntity<Object> handleProductNotCreatedException(ProductNotCreatedException ex) {
+        ErrorResponse response = new ErrorResponse(
+                ex.getMessage(),
+                System.currentTimeMillis()
+        );
+        return new ResponseEntity<>(response, HttpStatus.UNPROCESSABLE_ENTITY);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Object> handleException(Exception ex) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
     }
+
     protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
                                                                   HttpHeaders headers,
                                                                   HttpStatus status,

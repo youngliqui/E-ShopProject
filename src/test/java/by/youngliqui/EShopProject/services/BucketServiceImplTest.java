@@ -2,6 +2,7 @@ package by.youngliqui.EShopProject.services;
 
 import by.youngliqui.EShopProject.dto.BucketDTO;
 import by.youngliqui.EShopProject.dto.BucketDetailsDTO;
+import by.youngliqui.EShopProject.exceptions.ProductNotFoundException;
 import by.youngliqui.EShopProject.exceptions.UserNotFoundException;
 import by.youngliqui.EShopProject.models.*;
 import by.youngliqui.EShopProject.repositories.BucketRepository;
@@ -103,6 +104,22 @@ class BucketServiceImplTest {
         assertThat(bucket.getProducts()).isNotNull();
         assertThat(bucket.getProducts()).hasSize(0);
         Mockito.verify(bucketRepository).save(bucket);
+    }
+
+    @Test
+    void throwExceptionIfProductsIsNotFound() {
+        Bucket bucket = Bucket.builder().build();
+
+        doReturn(Optional.empty()).when(productRepository).findById(anyLong());
+
+        long productId = 0;
+        assertAll(() -> {
+            var exception = assertThrows(ProductNotFoundException.class,
+                    () -> bucketService.addProducts(bucket, Collections.singletonList(productId)));
+            assertThat(exception.getMessage())
+                    .isEqualTo("product with id = " + productId + " was not found");
+        });
+        verify(productRepository).findById(productId);
     }
 
     @Test

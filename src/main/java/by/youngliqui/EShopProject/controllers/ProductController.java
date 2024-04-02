@@ -4,8 +4,11 @@ import by.youngliqui.EShopProject.dto.ProductDTO;
 import by.youngliqui.EShopProject.dto.ProductsResponse;
 import by.youngliqui.EShopProject.exceptions.ProductNotCreatedException;
 import by.youngliqui.EShopProject.services.ProductService;
+import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.info.Info;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +25,8 @@ import java.util.List;
 @RestController
 @RequestMapping("/products")
 @Tag(name = "Продукты", description = "методы для работы с продуктами")
+@OpenAPIDefinition(info = @Info(title = "E-SHOP API", version = "v1"))
+@SecurityRequirement(name = "basicAuth")
 public class ProductController {
     private final ProductService productService;
 

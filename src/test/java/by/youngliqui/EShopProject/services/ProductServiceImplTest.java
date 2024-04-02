@@ -1,6 +1,7 @@
 package by.youngliqui.EShopProject.services;
 
 import by.youngliqui.EShopProject.dto.ProductDTO;
+import by.youngliqui.EShopProject.exceptions.ProductNotFoundException;
 import by.youngliqui.EShopProject.models.*;
 import by.youngliqui.EShopProject.repositories.ProductRepository;
 import org.junit.jupiter.api.Test;
@@ -96,16 +97,16 @@ class ProductServiceImplTest {
     }
 
     @Test
-    void getEmptyProductDTOByIdIfProductIsNotFound() {
-        ProductDTO expectedDTO = ProductDTO.builder().build();
-
+    void throwExceptionIfProductIsNotFound() {
         doReturn(Optional.empty()).when(productRepository).findById(anyLong());
 
-        var actualResult = productService.getById(anyLong());
-
-        verify(productRepository).findById(anyLong());
-        assertThat(actualResult).isNotNull();
-        assertThat(actualResult).isEqualTo(expectedDTO);
+        long productId = 1L;
+        assertAll(() -> {
+            var exception = assertThrows(ProductNotFoundException.class,
+                    () -> productService.getById(productId));
+            assertThat(exception.getMessage()).isEqualTo("product with id = " + productId + " was not found");
+        });
+        verify(productRepository).findById(productId);
     }
 
     @Test

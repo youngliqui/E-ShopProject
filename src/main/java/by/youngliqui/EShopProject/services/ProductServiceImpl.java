@@ -1,6 +1,7 @@
 package by.youngliqui.EShopProject.services;
 
 import by.youngliqui.EShopProject.dto.ProductDTO;
+import by.youngliqui.EShopProject.exceptions.ProductNotFoundException;
 import by.youngliqui.EShopProject.mappers.ProductMapper;
 import by.youngliqui.EShopProject.models.Bucket;
 import by.youngliqui.EShopProject.models.Product;
@@ -62,7 +63,8 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ProductDTO getById(Long id) {
-        Product product = productRepository.findById(id).orElse(new Product());
+        Product product = productRepository.findById(id).orElseThrow(
+                () -> new ProductNotFoundException("product with id = " + id + " was not found"));
         return ProductMapper.MAPPER.fromProduct(product);
     }
 }

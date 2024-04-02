@@ -2,6 +2,7 @@ package by.youngliqui.EShopProject.services;
 
 import by.youngliqui.EShopProject.dto.BucketDTO;
 import by.youngliqui.EShopProject.dto.BucketDetailsDTO;
+import by.youngliqui.EShopProject.exceptions.ProductNotFoundException;
 import by.youngliqui.EShopProject.exceptions.UserNotFoundException;
 import by.youngliqui.EShopProject.models.*;
 import by.youngliqui.EShopProject.repositories.BucketRepository;
@@ -12,7 +13,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -23,6 +27,7 @@ public class BucketServiceImpl implements BucketService {
     private final OrderDetailsRepository orderDetailsRepository;
     private final OrderService orderService;
     private final UserService userService;
+
     @Autowired
     public BucketServiceImpl(BucketRepository bucketRepository, ProductRepository productRepository, OrderDetailsRepository orderDetailsRepository, OrderService orderService, UserService userService) {
         this.bucketRepository = bucketRepository;
@@ -46,7 +51,8 @@ public class BucketServiceImpl implements BucketService {
 
     private List<Product> getCollectRefProductsByIds(List<Long> productsIds) {
         return productsIds.stream()
-                .map(id -> productRepository.findById(id).get())
+                .map(id -> productRepository.findById(id).orElseThrow(
+                        () -> new ProductNotFoundException("product with id = " + id + " was not found")))
                 .collect(Collectors.toList());
     }
 
