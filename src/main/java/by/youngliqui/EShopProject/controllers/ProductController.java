@@ -4,6 +4,9 @@ import by.youngliqui.EShopProject.dto.ProductDTO;
 import by.youngliqui.EShopProject.dto.ProductsResponse;
 import by.youngliqui.EShopProject.exceptions.ProductNotCreatedException;
 import by.youngliqui.EShopProject.services.ProductService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,6 +21,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/products")
+@Tag(name = "Продукты", description = "методы для работы с продуктами")
 public class ProductController {
     private final ProductService productService;
 
@@ -27,6 +31,7 @@ public class ProductController {
     }
 
     @GetMapping
+    @Operation(summary = "получение списка всех товаров")
     public ProductsResponse list() {
         return new ProductsResponse(productService.getAll());
     }
@@ -34,6 +39,7 @@ public class ProductController {
 
     @PostMapping("/new")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'MANAGER')")
+    @Operation(summary = "добавление нового продукта")
     public ResponseEntity<HttpStatus> addProduct(@RequestBody @Valid ProductDTO productDTO,
                                                  BindingResult bindingResult) {
         StringBuilder errorMsg = new StringBuilder();
@@ -56,7 +62,9 @@ public class ProductController {
     }
 
     @GetMapping("/{id}/bucket")
-    public ResponseEntity<HttpStatus> addBucket(@PathVariable Long id, Principal principal) {
+    @Operation(summary = "добавление товара в корзину пользователя")
+    public ResponseEntity<HttpStatus> addBucket(@Parameter(description = "уникальный индентификатор товара")
+                                                @PathVariable Long id, Principal principal) {
         // if principal == null -> redirect to products
         if (principal == null) {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -68,7 +76,8 @@ public class ProductController {
 
     @GetMapping("/{id}")
     @ResponseBody
-    public ProductDTO getById(@PathVariable Long id) {
+    @Operation(summary = "получение товара по id")
+    public ProductDTO getById(@Parameter(description = "уникальный индентификатор товара") @PathVariable Long id) {
         return productService.getById(id);
     }
 }
