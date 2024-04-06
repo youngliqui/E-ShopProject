@@ -1,6 +1,7 @@
 package by.youngliqui.EShopProject.services;
 
 import by.youngliqui.EShopProject.dto.UserDTO;
+import by.youngliqui.EShopProject.exceptions.UserNotFoundException;
 import by.youngliqui.EShopProject.models.Role;
 import by.youngliqui.EShopProject.models.User;
 import by.youngliqui.EShopProject.repositories.UserRepository;
@@ -19,6 +20,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Stream;
 
@@ -233,6 +235,49 @@ class UserServiceImplTest {
         verify(passwordEncoder, Mockito.times(0)).encode(anyString());
     }
 
+    @Test
+    void shouldDeleteUserById() {
+        long userId = 0L;
+        User user = User.builder().id(userId).build();
+
+        doReturn(Optional.of(user)).when(userRepository).findById(userId);
+
+        userService.deleteById(userId);
+
+        verify(userRepository).delete(user);
+    }
+
+    @Test
+    void shouldDeleteUserByUsername() {
+        String username = "name";
+        User user = User.builder().name(username).build();
+
+        doReturn(user).when(userRepository).findFirstByName(username);
+
+        userService.deleteByUsername(username);
+
+        verify(userRepository).delete(user);
+    }
+
+    @Test
+    void throwExceptionWhenUserByIdWasNotFound() {
+        long userId = -1;
+        assertAll(() -> {
+            var exception = assertThrows(UserNotFoundException.class, () -> userService.deleteById(userId));
+            assertThat(exception.getMessage()).isEqualTo("user with id " + userId + " was not found");
+        });
+    }
+
+    @Test
+    void throwExceptionWhenUserByUsernameWasNotFound() {
+        doReturn(null).when(userRepository).findFirstByName(anyString());
+
+        String username = "name";
+        assertAll(() -> {
+            var exception = assertThrows(UserNotFoundException.class, () -> userService.deleteByUsername(username));
+            assertThat(exception.getMessage()).isEqualTo("user with username " + username + " was not found");
+        });
+    }
 
     private static Stream<Arguments> getUsers() {
         return Stream.of(

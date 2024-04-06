@@ -122,4 +122,35 @@ public class UserController {
         userService.updateProfile(dto, principal.getName());
         return ResponseEntity.status(HttpStatus.OK).body(String.valueOf(HttpStatus.OK));
     }
+
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @DeleteMapping("/{id}")
+    @Operation(summary = "Удаление пользователя по id")
+    public ResponseEntity<Void> deleteUserById(@Parameter(description = "уникальный идентификатор пользователя")
+                                               @PathVariable("id") long id,
+                                               Principal principal) {
+
+        if (principal == null) {
+            throw new UserNotAuthorizeException("you are not authorize");
+        }
+
+        userService.deleteById(id);
+
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
+    }
+
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @DeleteMapping("/name/{username}")
+    @Operation(summary = "Удаление пользователя по username")
+    public ResponseEntity<Void> deleteUserByUsername(@Parameter(description = "имя пользователя")
+                                                     @PathVariable("username") String username,
+                                                     Principal principal) {
+        if (principal == null) {
+            throw new UserNotAuthorizeException("you are not authorize");
+        }
+
+        userService.deleteByUsername(username);
+
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
+    }
 }

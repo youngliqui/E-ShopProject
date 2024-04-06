@@ -12,6 +12,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -316,13 +317,137 @@ class UserControllerTestIT {
                                     .password("dummy")
                                     .build(), Void.class
                             );
+
+            assertThat(actualResult.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
         }
 
         @AfterEach
         void deleteUsers() {
             System.out.println("get roles users after each");
-            userRepository.deleteAllInBatch(List.of(IVAN, MAX, ADMIN, MANAGER));
+            userRepository.deleteAllInBatch();
         }
 
+    }
+
+    @Nested
+    @Tag("delete")
+    @DisplayName("test delete user functionality")
+    class DeleteUserTest {
+        @BeforeEach
+        void prepare() {
+            System.out.println("test delete user before each");
+            userRepository.save(IVAN);
+            userRepository.save(ADMIN);
+        }
+
+        @Test
+        void shouldDeleteUserByCorrectId() {
+            List<User> users = userService.getAll();
+            assertThat(users.size()).isEqualTo(2);
+
+            ResponseEntity<Void> actualResult = testRestTemplate
+                    .withBasicAuth(ADMIN.getName(), "admin")
+                    .exchange("/users/" + IVAN.getId(), HttpMethod.DELETE, null, Void.class);
+
+            assertThat(actualResult.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
+            assertThat(userRepository.findById(IVAN.getId())).isEmpty();
+        }
+
+        @Test
+        void checkDeleteUserByIdWhenAuthorityIsNull() {
+            List<User> users = userService.getAll();
+            assertThat(users.size()).isEqualTo(2);
+
+            ResponseEntity<Void> actualResult = testRestTemplate
+                    .withBasicAuth("dummy", "dummy")
+                    .exchange("/users/" + 1, HttpMethod.DELETE, null, Void.class);
+
+            assertThat(actualResult.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
+            assertThat(userRepository.findAll().size()).isEqualTo(2);
+        }
+
+        @Test
+        void checkDeleteUserByIdWhenAuthorityIsUser() {
+            List<User> users = userService.getAll();
+            assertThat(users.size()).isEqualTo(2);
+
+            ResponseEntity<Void> actualResult = testRestTemplate
+                    .withBasicAuth(IVAN.getName(), "ivan")
+                    .exchange("/users/" + 1, HttpMethod.DELETE, null, Void.class);
+
+            assertThat(actualResult.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
+            assertThat(userRepository.findAll().size()).isEqualTo(2);
+        }
+
+        @Test
+        void checkDeleteUserByIncorrectId() {
+            List<User> users = userService.getAll();
+            assertThat(users.size()).isEqualTo(2);
+
+            ResponseEntity<String> actualResult = testRestTemplate
+                    .withBasicAuth(ADMIN.getName(), "admin")
+                    .exchange("/users/" + 10000, HttpMethod.DELETE, null, String.class);
+
+            assertThat(actualResult.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+            assertThat(userRepository.findAll().size()).isEqualTo(2);
+        }
+
+        @Test
+        void shouldDeleteUserByCorrectUsername() {
+            List<User> users = userService.getAll();
+            assertThat(users.size()).isEqualTo(2);
+
+            ResponseEntity<Void> actualResult = testRestTemplate
+                    .withBasicAuth(ADMIN.getName(), "admin")
+                    .exchange("/users/name/" + IVAN.getName(), HttpMethod.DELETE, null, Void.class);
+
+            assertThat(actualResult.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
+            assertThat(userRepository.findFirstByName(IVAN.getName())).isNull();
+        }
+
+        @Test
+        void checkDeleteUserByUsernameWhenAuthorityIsNull() {
+            List<User> users = userService.getAll();
+            assertThat(users.size()).isEqualTo(2);
+
+            ResponseEntity<Void> actualResult = testRestTemplate
+                    .withBasicAuth("dummy", "dummy")
+                    .exchange("/users/name/" + IVAN.getName(), HttpMethod.DELETE, null, Void.class);
+
+            assertThat(actualResult.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
+            assertThat(userRepository.findAll().size()).isEqualTo(2);
+        }
+
+        @Test
+        void checkDeleteUserByUsernameWhenAuthorityIsUser() {
+            List<User> users = userService.getAll();
+            assertThat(users.size()).isEqualTo(2);
+
+            ResponseEntity<Void> actualResult = testRestTemplate
+                    .withBasicAuth(IVAN.getName(), "ivan")
+                    .exchange("/users/name/" + IVAN.getName(), HttpMethod.DELETE, null, Void.class);
+
+            assertThat(actualResult.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
+            assertThat(userRepository.findAll().size()).isEqualTo(2);
+        }
+
+        @Test
+        void checkDeleteUserByIncorrectUsername() {
+            List<User> users = userService.getAll();
+            assertThat(users.size()).isEqualTo(2);
+
+            ResponseEntity<String> actualResult = testRestTemplate
+                    .withBasicAuth(ADMIN.getName(), "admin")
+                    .exchange("/users/name/" + "dummy", HttpMethod.DELETE, null, String.class);
+
+            assertThat(actualResult.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+            assertThat(userRepository.findAll().size()).isEqualTo(2);
+        }
+
+        @AfterEach
+        void deleteUsers() {
+            System.out.println("delete user after each");
+            userRepository.deleteAllInBatch();
+        }
     }
 }

@@ -1,6 +1,7 @@
 package by.youngliqui.EShopProject.services;
 
 import by.youngliqui.EShopProject.dto.UserDTO;
+import by.youngliqui.EShopProject.exceptions.UserNotFoundException;
 import by.youngliqui.EShopProject.models.Role;
 import by.youngliqui.EShopProject.models.User;
 import by.youngliqui.EShopProject.repositories.UserRepository;
@@ -18,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 @Service
 @Component
@@ -109,5 +111,28 @@ public class UserServiceImpl implements UserService, UserDetailsService {
                 user.getPassword(),
                 roles
         );
+    }
+
+    @Override
+    @Transactional
+    public void deleteById(long id) {
+        Optional<User> user = userRepository.findById(id);
+        if (user.isEmpty()) {
+            throw new UserNotFoundException("user with id " + id + " was not found");
+        }
+
+        userRepository.delete(user.get());
+    }
+
+    @Override
+    @Transactional
+    public void deleteByUsername(String username) {
+        User findUser = userRepository.findFirstByName(username);
+
+        if (findUser == null) {
+            throw new UserNotFoundException("user with username " + username + " was not found");
+        }
+
+        userRepository.delete(findUser);
     }
 }
