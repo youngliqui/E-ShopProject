@@ -2,8 +2,7 @@ package by.youngliqui.EShopProject.controllers;
 
 import by.youngliqui.EShopProject.dto.ProductDTO;
 import by.youngliqui.EShopProject.services.ProductService;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
@@ -34,39 +33,55 @@ class ProductControllerIT {
             .price(BigDecimal.valueOf(999.99))
             .build();
 
-    @BeforeEach
-    void setUp() {
-        given(productService.getById(expectedProduct.getId())).willReturn(expectedProduct);
+
+    @Nested
+    @Tag("get")
+    @DisplayName("test get products functionality")
+    class GetProduct {
+        @BeforeEach
+        void setUp() {
+            given(productService.getById(expectedProduct.getId())).willReturn(expectedProduct);
+        }
+
+        @Test
+        void getById() {
+            ResponseEntity<ProductDTO> entity =
+                    testRestTemplate.getForEntity("/products/" + expectedProduct.getId(), ProductDTO.class);
+
+            assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
+
+            ProductDTO actualProduct = entity.getBody();
+            assertThat(actualProduct).isEqualTo(expectedProduct);
+        }
     }
 
-    @Test
-    void getById() {
-        ResponseEntity<ProductDTO> entity =
-                testRestTemplate.getForEntity("/products/" + expectedProduct.getId(), ProductDTO.class);
+    @Nested
+    @Tag("add")
+    @DisplayName("test add products functionality")
+    class AddProduct {
+        @BeforeEach
+        void setUp() {
+            given(productService.getById(expectedProduct.getId())).willReturn(expectedProduct);
+        }
 
-        assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
+        @Test
+        @WithMockUser(username = "admin", authorities = "ADMIN")
+        void addProduct() {
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            HttpEntity<ProductDTO> request = new HttpEntity<>(expectedProduct, headers);
 
-        ProductDTO actualProduct = entity.getBody();
-        assertThat(actualProduct).isEqualTo(expectedProduct);
-    }
+            ResponseEntity<Void> entity =
+                    testRestTemplate.postForEntity("/products/new", request, Void.class);
 
-    @Test
-    @WithMockUser(username = "admin", authorities = "ADMIN")
-    void addProduct() {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity<ProductDTO> request = new HttpEntity<>(expectedProduct, headers);
+            assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.CREATED);
 
-        ResponseEntity<Void> entity =
-                testRestTemplate.postForEntity("/products/new", request, Void.class);
+            verify(productService).addProduct(Mockito.eq(expectedProduct));
 
-        assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+            ArgumentCaptor<ProductDTO> captor = ArgumentCaptor.forClass(ProductDTO.class);
+            verify(productService).addProduct(captor.capture());
 
-        verify(productService).addProduct(Mockito.eq(expectedProduct));
-
-        ArgumentCaptor<ProductDTO> captor = ArgumentCaptor.forClass(ProductDTO.class);
-        verify(productService).addProduct(captor.capture());
-
-        assertThat(captor.getValue()).isEqualTo(expectedProduct);
+            assertThat(captor.getValue()).isEqualTo(expectedProduct);
+        }
     }
 }

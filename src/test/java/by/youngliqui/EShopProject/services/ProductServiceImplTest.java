@@ -22,7 +22,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 class ProductServiceImplTest {
@@ -157,4 +158,29 @@ class ProductServiceImplTest {
         verify(userService).findByName(user.getName());
         verify(bucketService).addProducts(bucket, Collections.singletonList(product1.getId()));
     }
+
+    @Test
+    void shouldDeleteProductByCorrectId() {
+        Long productId = 1L;
+        Product product = Product.builder().id(productId).build();
+
+        doReturn(Optional.of(product)).when(productRepository).findById(productId);
+
+        productService.deleteProductById(productId);
+
+        verify(productRepository).findById(productId);
+        verify(productRepository).delete(product);
+    }
+
+    @Test
+    void throwExceptionIfUserByIdNotFoundWhenDeleting() {
+        long productId = -1L;
+
+        assertAll(() -> {
+            var exception = assertThrows(ProductNotFoundException.class,
+                    () -> productService.deleteProductById(productId));
+            assertThat(exception.getMessage()).isEqualTo("product with id " + productId + " was not found");
+        });
+    }
+
 }

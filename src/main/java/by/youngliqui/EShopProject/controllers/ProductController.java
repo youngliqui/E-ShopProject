@@ -85,4 +85,15 @@ public class ProductController {
     public ProductDTO getById(@Parameter(description = "уникальный индентификатор товара") @PathVariable Long id) {
         return productService.getById(id);
     }
+
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'MANAGER')")
+    @DeleteMapping("/{id}")
+    @Operation(summary = "удаление товара по id")
+    public ResponseEntity<Void> deleteProductById(@Parameter(description = "уникальный идентификатор товара")
+                                                  @PathVariable("id") Long id) {
+
+        productService.deleteProductById(id);
+
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
+    }
 }

@@ -2,6 +2,7 @@ package by.youngliqui.EShopProject.services;
 
 import by.youngliqui.EShopProject.dto.ProductDTO;
 import by.youngliqui.EShopProject.exceptions.ProductNotFoundException;
+import by.youngliqui.EShopProject.exceptions.UserNotFoundException;
 import by.youngliqui.EShopProject.mappers.ProductMapper;
 import by.youngliqui.EShopProject.models.Bucket;
 import by.youngliqui.EShopProject.models.Product;
@@ -66,5 +67,14 @@ public class ProductServiceImpl implements ProductService {
         Product product = productRepository.findById(id).orElseThrow(
                 () -> new ProductNotFoundException("product with id = " + id + " was not found"));
         return ProductMapper.MAPPER.fromProduct(product);
+    }
+
+    @Override
+    @Transactional
+    public void deleteProductById(Long productId) {
+        Product product = productRepository.findById(productId).orElseThrow(
+                () -> new ProductNotFoundException("product with id " + productId + " was not found"));
+
+        productRepository.delete(product);
     }
 }
