@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -24,6 +25,33 @@ public class ProductDTO {
     @Schema(description = "Стоимость товара")
     private BigDecimal price;
 
+    @Schema(description = "Скидка на товар")
+    private BigDecimal sale;
+
+    @Schema(description = "категории товара")
+    private List<String> categoriesNames;
+
+    @Schema(description = "бренд товара")
+    private String brandName;
+
+    @Schema(description = "цвет товара")
+    private String color;
+
     @Schema(description = "Размер товара")
     private String size;
+
+    @Schema(description = "Вес товара")
+    private Float weight;
+
+    @Schema(description = "Материал товара")
+    private String material;
+
+    @Schema(description = "Инструкция по уходу")
+    private String careInstructions;
+
+    @Schema(description = "Есть ли товар в наличии")
+    private Boolean availability;
+
+    @Schema(description = "Отзывы на товар")
+    private List<ReviewsDTO> reviews;
 }

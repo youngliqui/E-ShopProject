@@ -13,11 +13,10 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Schema(description = "Подробности заказа")
+@Schema(description = "Подробности корзины")
 public class BucketDetailsDTO {
     @Schema(description = "название товара")
     private String title;
-    //private Long productId;
     @Schema(description = "цена одного товара")
     private BigDecimal price;
     @Schema(description = "общая стоимость товаров")

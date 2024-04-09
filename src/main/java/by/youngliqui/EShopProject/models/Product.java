@@ -60,8 +60,6 @@ public class Product {
     private Integer quantity;
     private Float weight;
 
-    private String dimensions;
-
     private String material;
 
     private String careInstructions;
