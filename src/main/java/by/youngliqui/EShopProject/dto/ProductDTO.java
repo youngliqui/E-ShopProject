@@ -18,6 +18,12 @@ public class ProductDTO {
     private Long id;
     @Schema(description = "Название товара")
     private String title;
+
+    @Schema(description = "Описание товара")
+    private String description;
     @Schema(description = "Стоимость товара")
     private BigDecimal price;
+
+    @Schema(description = "Размер товара")
+    private String size;
 }

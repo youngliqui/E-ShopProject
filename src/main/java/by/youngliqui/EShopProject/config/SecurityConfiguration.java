@@ -1,6 +1,6 @@
 package by.youngliqui.EShopProject.config;
 
-import by.youngliqui.EShopProject.models.Role;
+import by.youngliqui.EShopProject.models.Enums.Role;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;

@@ -2,10 +2,9 @@ package by.youngliqui.EShopProject.controllers;
 
 import by.youngliqui.EShopProject.models.Bucket;
 import by.youngliqui.EShopProject.models.Product;
-import by.youngliqui.EShopProject.models.Role;
+import by.youngliqui.EShopProject.models.Enums.Role;
 import by.youngliqui.EShopProject.models.User;
 import by.youngliqui.EShopProject.repositories.UserRepository;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

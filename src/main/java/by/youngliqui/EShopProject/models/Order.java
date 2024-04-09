@@ -1,5 +1,6 @@
 package by.youngliqui.EShopProject.models;
 
+import by.youngliqui.EShopProject.models.Enums.OrderStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -45,4 +46,6 @@ public class Order {
     @Enumerated(EnumType.STRING)
     private OrderStatus status;
 
+    @OneToOne(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Shipping shipping;
 }

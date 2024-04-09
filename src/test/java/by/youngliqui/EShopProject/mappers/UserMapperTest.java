@@ -3,7 +3,7 @@ package by.youngliqui.EShopProject.mappers;
 import by.youngliqui.EShopProject.dto.UserDTO;
 import by.youngliqui.EShopProject.models.Bucket;
 import by.youngliqui.EShopProject.models.Order;
-import by.youngliqui.EShopProject.models.Role;
+import by.youngliqui.EShopProject.models.Enums.Role;
 import by.youngliqui.EShopProject.models.User;
 import org.junit.jupiter.api.Test;
 

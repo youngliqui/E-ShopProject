@@ -3,7 +3,7 @@ package by.youngliqui.EShopProject.mappers;
 import by.youngliqui.EShopProject.dto.ProductDTO;
 import by.youngliqui.EShopProject.models.Category;
 import by.youngliqui.EShopProject.models.Product;
-import by.youngliqui.EShopProject.models.Size;
+import by.youngliqui.EShopProject.models.Enums.Size;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;

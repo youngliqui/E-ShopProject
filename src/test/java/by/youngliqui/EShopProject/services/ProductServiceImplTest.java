@@ -3,6 +3,7 @@ package by.youngliqui.EShopProject.services;
 import by.youngliqui.EShopProject.dto.ProductDTO;
 import by.youngliqui.EShopProject.exceptions.ProductNotFoundException;
 import by.youngliqui.EShopProject.models.*;
+import by.youngliqui.EShopProject.models.Enums.Size;
 import by.youngliqui.EShopProject.repositories.ProductRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

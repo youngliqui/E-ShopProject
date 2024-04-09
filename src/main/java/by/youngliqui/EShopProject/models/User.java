@@ -1,5 +1,6 @@
 package by.youngliqui.EShopProject.models;
 
+import by.youngliqui.EShopProject.models.Enums.Role;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -32,5 +33,8 @@ public class User {
 
     @OneToMany(mappedBy = "user")
     private List<Order> orders;
+
+    @OneToMany(mappedBy = "reviewer", cascade = CascadeType.REMOVE)
+    private List<Review> reviews;
 
 }

@@ -3,7 +3,7 @@ package by.youngliqui.EShopProject.controllers;
 import by.youngliqui.EShopProject.dto.UserDTO;
 import by.youngliqui.EShopProject.dto.UsersResponse;
 import by.youngliqui.EShopProject.mappers.UserMapper;
-import by.youngliqui.EShopProject.models.Role;
+import by.youngliqui.EShopProject.models.Enums.Role;
 import by.youngliqui.EShopProject.models.User;
 import by.youngliqui.EShopProject.repositories.UserRepository;
 import by.youngliqui.EShopProject.services.UserService;

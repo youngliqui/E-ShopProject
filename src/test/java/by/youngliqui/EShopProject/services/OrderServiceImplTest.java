@@ -2,7 +2,7 @@ package by.youngliqui.EShopProject.services;
 
 import by.youngliqui.EShopProject.models.Order;
 import by.youngliqui.EShopProject.models.OrderDetails;
-import by.youngliqui.EShopProject.models.OrderStatus;
+import by.youngliqui.EShopProject.models.Enums.OrderStatus;
 import by.youngliqui.EShopProject.models.User;
 import by.youngliqui.EShopProject.repositories.OrderRepository;
 import org.junit.jupiter.api.Test;

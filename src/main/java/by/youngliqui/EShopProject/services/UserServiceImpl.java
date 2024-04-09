@@ -2,7 +2,7 @@ package by.youngliqui.EShopProject.services;
 
 import by.youngliqui.EShopProject.dto.UserDTO;
 import by.youngliqui.EShopProject.exceptions.UserNotFoundException;
-import by.youngliqui.EShopProject.models.Role;
+import by.youngliqui.EShopProject.models.Enums.Role;
 import by.youngliqui.EShopProject.models.User;
 import by.youngliqui.EShopProject.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;

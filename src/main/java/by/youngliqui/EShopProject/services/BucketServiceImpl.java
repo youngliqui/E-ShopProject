@@ -5,6 +5,7 @@ import by.youngliqui.EShopProject.dto.BucketDetailsDTO;
 import by.youngliqui.EShopProject.exceptions.ProductNotFoundException;
 import by.youngliqui.EShopProject.exceptions.UserNotFoundException;
 import by.youngliqui.EShopProject.models.*;
+import by.youngliqui.EShopProject.models.Enums.OrderStatus;
 import by.youngliqui.EShopProject.repositories.BucketRepository;
 import by.youngliqui.EShopProject.repositories.OrderDetailsRepository;
 import by.youngliqui.EShopProject.repositories.ProductRepository;

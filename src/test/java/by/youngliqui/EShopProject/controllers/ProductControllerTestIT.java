@@ -2,8 +2,8 @@ package by.youngliqui.EShopProject.controllers;
 
 import by.youngliqui.EShopProject.mappers.ProductMapper;
 import by.youngliqui.EShopProject.models.Product;
-import by.youngliqui.EShopProject.models.Role;
-import by.youngliqui.EShopProject.models.Size;
+import by.youngliqui.EShopProject.models.Enums.Role;
+import by.youngliqui.EShopProject.models.Enums.Size;
 import by.youngliqui.EShopProject.models.User;
 import by.youngliqui.EShopProject.repositories.ProductRepository;
 import by.youngliqui.EShopProject.repositories.UserRepository;
