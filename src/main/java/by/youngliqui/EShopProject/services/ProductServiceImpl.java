@@ -2,14 +2,13 @@ package by.youngliqui.EShopProject.services;
 
 import by.youngliqui.EShopProject.dto.ProductDTO;
 import by.youngliqui.EShopProject.exceptions.ProductNotFoundException;
+import by.youngliqui.EShopProject.exceptions.UserNotFoundException;
 import by.youngliqui.EShopProject.mappers.ProductMapper;
 import by.youngliqui.EShopProject.models.Bucket;
 import by.youngliqui.EShopProject.models.Product;
 import by.youngliqui.EShopProject.models.User;
 import by.youngliqui.EShopProject.repositories.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -77,34 +76,5 @@ public class ProductServiceImpl implements ProductService {
                 () -> new ProductNotFoundException("product with id " + productId + " was not found"));
 
         productRepository.delete(product);
-    }
-
-    @Override
-    public List<ProductDTO> getFilteredAndSortedProducts(
-            String title, String sortBy, int page, int pageSize) {
-
-        PageRequest pageRequest = PageRequest.of(page, pageSize);
-        Page<Product> productsPage;
-
-        if (title != null) {
-            if (sortBy.equals("priceAsc")) {
-                productsPage = productRepository.findAllByTitleContainingIgnoreCaseOrderByPriceAsc(title, pageRequest);
-            } else if (sortBy.equals("priceDesc")) {
-                productsPage = productRepository.findAllByTitleContainingIgnoreCaseOrderByPriceDesc(title, pageRequest);
-            } else {
-                productsPage = productRepository.findAllByTitleContainingIgnoreCase(title, pageRequest);
-            }
-        } else {
-            if (sortBy.equals("priceAsc")) {
-                productsPage = productRepository.findAllSortedByAscendingPrice(pageRequest);
-            } else if (sortBy.equals("priceDesc")) {
-                productsPage = productRepository.findAllSortedByDescendingPrice(pageRequest);
-            } else {
-                productsPage = productRepository.findAll(pageRequest);
-            }
-        }
-
-
-        return productMapper.fromProductList(productsPage.getContent());
     }
 }

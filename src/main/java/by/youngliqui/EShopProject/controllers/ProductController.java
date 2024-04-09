@@ -35,7 +35,7 @@ public class ProductController {
         this.productService = productService;
     }
 
-    @GetMapping()
+    @GetMapping
     @Operation(summary = "получение списка всех товаров")
     public ProductsResponse list() {
         return new ProductsResponse(productService.getAll());
@@ -95,18 +95,5 @@ public class ProductController {
         productService.deleteProductById(id);
 
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
-    }
-
-    @GetMapping(params = {"page", "size"})
-    @Operation(summary = "получение страниц с товарами")
-    public List<ProductDTO> getFilteredAndSortedProducts(
-            @Parameter(description = "наименование") @RequestParam(value = "title", required = false) String name,
-            @Parameter(description = "сортировка")
-            @RequestParam(value = "sortBy", defaultValue = "default", required = false) String sortBy,
-            @Parameter(description = "номер страницы") @RequestParam(value = "page", defaultValue = "0") int page,
-            @Parameter(description = "количество товаров на странице")
-            @RequestParam(value = "size", defaultValue = "10") int size
-    ) {
-        return productService.getFilteredAndSortedProducts(name, sortBy, page, size);
     }
 }
