@@ -1,4 +1,4 @@
-package by.youngliqui.EShopProject.services;
+package by.youngliqui.EShopProject.servicesImpl;
 
 import by.youngliqui.EShopProject.dto.ProductDTO;
 import by.youngliqui.EShopProject.exceptions.ProductNotFoundException;
@@ -7,6 +7,9 @@ import by.youngliqui.EShopProject.models.Bucket;
 import by.youngliqui.EShopProject.models.Product;
 import by.youngliqui.EShopProject.models.User;
 import by.youngliqui.EShopProject.repositories.ProductRepository;
+import by.youngliqui.EShopProject.services.BucketService;
+import by.youngliqui.EShopProject.services.ProductService;
+import by.youngliqui.EShopProject.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;

@@ -5,6 +5,7 @@ import by.youngliqui.EShopProject.models.OrderDetails;
 import by.youngliqui.EShopProject.models.Enums.OrderStatus;
 import by.youngliqui.EShopProject.models.User;
 import by.youngliqui.EShopProject.repositories.OrderRepository;
+import by.youngliqui.EShopProject.servicesImpl.OrderServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

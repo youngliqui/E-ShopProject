@@ -1,4 +1,4 @@
-package by.youngliqui.EShopProject.services;
+package by.youngliqui.EShopProject.servicesImpl;
 
 import by.youngliqui.EShopProject.dto.BucketDTO;
 import by.youngliqui.EShopProject.dto.BucketDetailsDTO;
@@ -9,6 +9,9 @@ import by.youngliqui.EShopProject.models.Enums.OrderStatus;
 import by.youngliqui.EShopProject.repositories.BucketRepository;
 import by.youngliqui.EShopProject.repositories.OrderDetailsRepository;
 import by.youngliqui.EShopProject.repositories.ProductRepository;
+import by.youngliqui.EShopProject.services.BucketService;
+import by.youngliqui.EShopProject.services.OrderService;
+import by.youngliqui.EShopProject.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

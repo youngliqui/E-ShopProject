@@ -8,6 +8,7 @@ import by.youngliqui.EShopProject.models.*;
 import by.youngliqui.EShopProject.models.Enums.Role;
 import by.youngliqui.EShopProject.repositories.BucketRepository;
 import by.youngliqui.EShopProject.repositories.ProductRepository;
+import by.youngliqui.EShopProject.servicesImpl.BucketServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

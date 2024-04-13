@@ -5,6 +5,7 @@ import by.youngliqui.EShopProject.exceptions.UserNotFoundException;
 import by.youngliqui.EShopProject.models.Enums.Role;
 import by.youngliqui.EShopProject.models.User;
 import by.youngliqui.EShopProject.repositories.UserRepository;
+import by.youngliqui.EShopProject.servicesImpl.UserServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;

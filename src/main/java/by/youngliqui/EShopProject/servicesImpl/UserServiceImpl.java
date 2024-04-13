@@ -1,10 +1,11 @@
-package by.youngliqui.EShopProject.services;
+package by.youngliqui.EShopProject.servicesImpl;
 
 import by.youngliqui.EShopProject.dto.UserDTO;
 import by.youngliqui.EShopProject.exceptions.UserNotFoundException;
 import by.youngliqui.EShopProject.models.Enums.Role;
 import by.youngliqui.EShopProject.models.User;
 import by.youngliqui.EShopProject.repositories.UserRepository;
+import by.youngliqui.EShopProject.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;

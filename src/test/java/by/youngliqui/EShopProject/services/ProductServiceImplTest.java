@@ -5,6 +5,8 @@ import by.youngliqui.EShopProject.exceptions.ProductNotFoundException;
 import by.youngliqui.EShopProject.models.*;
 import by.youngliqui.EShopProject.models.Enums.Size;
 import by.youngliqui.EShopProject.repositories.ProductRepository;
+import by.youngliqui.EShopProject.servicesImpl.ProductServiceImpl;
+import by.youngliqui.EShopProject.servicesImpl.UserServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

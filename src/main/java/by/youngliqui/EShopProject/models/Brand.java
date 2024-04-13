@@ -30,4 +30,12 @@ public class Brand {
 
     @OneToMany(mappedBy = "brand", cascade = CascadeType.ALL)
     private List<Product> products;
+
+    public void addProduct(Product product) {
+        products.add(product);
+    }
+
+    public void addProducts(List<Product> addedList) {
+        products.addAll(addedList);
+    }
 }
