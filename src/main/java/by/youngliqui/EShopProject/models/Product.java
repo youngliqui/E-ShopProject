@@ -77,4 +77,8 @@ public class Product {
     @OneToOne(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     private Payment payment;
 
+
+    public void addCategory(Category category) {
+        categories.add(category);
+    }
 }
