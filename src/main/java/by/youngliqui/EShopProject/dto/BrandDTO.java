@@ -21,8 +21,5 @@ public class BrandDTO {
     private String name;
 
     @Schema(description = "Описание бренда")
-    private String descriptions;
-
-    @Schema(description = "Продукты бренда")
-    private List<ProductDTO> products;
+    private String description;
 }

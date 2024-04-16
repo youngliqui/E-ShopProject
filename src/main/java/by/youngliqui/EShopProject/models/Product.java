@@ -62,9 +62,9 @@ public class Product {
 
     private String material;
 
+    @Column(length = 500)
     private String careInstructions;
 
-    @Column(nullable = false)
     private Boolean availability;
 
     @ElementCollection(fetch = FetchType.LAZY)
@@ -81,4 +81,9 @@ public class Product {
     public void addCategory(Category category) {
         categories.add(category);
     }
+
+    public void addBrand(Brand brand) {
+        this.brand = brand;
+    }
+
 }

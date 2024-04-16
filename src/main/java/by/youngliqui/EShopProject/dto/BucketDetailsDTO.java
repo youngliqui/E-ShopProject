@@ -28,7 +28,7 @@ public class BucketDetailsDTO {
         this.title = product.getTitle();
         this.amount = new BigDecimal("1.0");
         this.sum = Double.valueOf(product.getPrice().toString());
-        //this.productId = product.getId();
-        this.price = product.getPrice();
+        this.price = product.getPrice().subtract(product.getPrice()
+                .multiply(product.getSale().multiply(BigDecimal.valueOf(0.01))));
     }
 }

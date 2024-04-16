@@ -20,5 +20,5 @@ public interface BrandService {
 
     void deleteByUsername(String username);
 
-    void addProductById(Long brandId, Long... productId);
+    void addProductById(Long brandId, List<Long> productId);
 }

@@ -54,6 +54,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
+    @Transactional
     public void addCategoryToProductById(Long productId, Long categoryId) {
         Product product = productRepository.findById(productId).orElseThrow(
                 () -> new ProductNotFoundException("product with id " + productId + " was not found")
@@ -68,6 +69,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
+    @Transactional
     public void addCategoryToProductByName(Long productId, String categoryName) {
         Product product = productRepository.findById(productId).orElseThrow(
                 () -> new ProductNotFoundException("product with id " + productId + " was not found")
@@ -82,6 +84,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
+    @Transactional
     public void deleteCategoryById(Long id) {
         Category deletedCategory = categoryRepository.findById(id).orElseThrow(
                 () -> new CategoryNotFoundException("category with id " + id + " was not found")

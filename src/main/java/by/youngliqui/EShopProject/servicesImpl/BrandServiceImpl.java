@@ -35,7 +35,7 @@ public class BrandServiceImpl implements BrandService {
     @Transactional
     public void save(BrandDTO brandDTO) {
         Brand brand = Brand.builder()
-                .description(brandDTO.getDescriptions())
+                .description(brandDTO.getDescription())
                 .name(brandDTO.getName())
                 .build();
 
@@ -89,13 +89,18 @@ public class BrandServiceImpl implements BrandService {
 
     @Override
     @Transactional
-    public void addProductById(Long brandId, Long... productIds) {
+    public void addProductById(Long brandId, List<Long> productIds) {
         Brand brand = brandRepository.findById(brandId)
                 .orElseThrow(() -> new BrandNotFoundException("brand with id " + brandId + " was not found"));
 
-        List<Product> products = productRepository.findAllById(List.of(productIds));
+        List<Product> products = productRepository.findAllById(List.of());
         brand.addProducts(products);
 
+        for (Product product : products) {
+            product.addBrand(brand);
+        }
+
+        productRepository.saveAll(products);
         brandRepository.save(brand);
     }
 }
