@@ -86,4 +86,19 @@ public class Product {
         this.brand = brand;
     }
 
+    public void addQuantity(Integer quantity) {
+        this.quantity += quantity;
+    }
+
+    public void subtractQuantity(Integer quantity) {
+        this.quantity -= quantity;
+    }
+
+    public void setAvailable() {
+        availability = true;
+    }
+
+    public void setUnavailable() {
+        availability = false;
+    }
 }

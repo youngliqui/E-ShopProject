@@ -50,6 +50,7 @@ public class ProductServiceImpl implements ProductService {
         }
 
         Bucket bucket = user.getBucket();
+
         if (bucket == null) {
             Bucket newBucket = bucketService.createBucket(user, Collections.singletonList(productId));
             user.setBucket(newBucket);
@@ -57,11 +58,17 @@ public class ProductServiceImpl implements ProductService {
         } else {
             bucketService.addProducts(bucket, Collections.singletonList(productId));
         }
+
+        subtractQuantity(1, productId);
     }
 
     @Override
     @Transactional
     public void addProduct(ProductDTO productDTO) {
+        if (productDTO.getAvailability() == null) {
+            productDTO.setAvailability(false);
+        }
+
         Product product = productMapper.toProduct(productDTO);
         productRepository.save(product);
     }
@@ -109,5 +116,63 @@ public class ProductServiceImpl implements ProductService {
 
 
         return productMapper.fromProductList(productsPage.getContent());
+    }
+
+    @Override
+    @Transactional
+    public void addQuantity(Integer quantity, Long productId) {
+        Product product = productRepository.findById(productId).orElseThrow(
+                () -> new ProductNotFoundException("product with id " + productId + " was not found")
+        );
+
+        product.addQuantity(quantity);
+        productRepository.save(product);
+    }
+
+    @Override
+    @Transactional
+    public void subtractQuantity(Integer quantity, Long productId) {
+        Product product = productRepository.findById(productId).orElseThrow(
+                () -> new ProductNotFoundException("product with id " + productId + " was not found")
+        );
+
+        Integer productQuantity = product.getQuantity();
+
+        if (productQuantity < quantity) {
+            throw new IllegalArgumentException("the quantity transferred is more than the quantity of the product");
+        }
+
+        if (productQuantity.equals(quantity)) {
+            product.setUnavailable();
+        }
+
+        product.subtractQuantity(quantity);
+        productRepository.save(product);
+    }
+
+    @Override
+    @Transactional
+    public void setAvailable(Long productId) {
+        Product product = productRepository.findById(productId).orElseThrow(
+                () -> new ProductNotFoundException("product with id " + productId + " was not found")
+        );
+
+        if (product.getQuantity() <= 0) {
+            throw new RuntimeException("quantity must be greater than 0");
+        }
+
+        product.setAvailable();
+        productRepository.save(product);
+    }
+
+    @Override
+    @Transactional
+    public void setUnavailable(Long productId) {
+        Product product = productRepository.findById(productId).orElseThrow(
+                () -> new ProductNotFoundException("product with id " + productId + " was not found")
+        );
+
+        product.setUnavailable();
+        productRepository.save(product);
     }
 }

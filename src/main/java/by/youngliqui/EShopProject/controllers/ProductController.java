@@ -101,7 +101,7 @@ public class ProductController {
     @Operation(summary = "получение страниц с товарами")
     public List<ProductDTO> getFilteredAndSortedProducts(
             @Parameter(description = "наименование") @RequestParam(value = "title", required = false) String name,
-            @Parameter(description = "сортировка")
+            @Parameter(description = "сортировка {priceAsc/priceDesc}")
             @RequestParam(value = "sortBy", defaultValue = "default", required = false) String sortBy,
             @Parameter(description = "номер страницы") @RequestParam(value = "page", defaultValue = "0") int page,
             @Parameter(description = "количество товаров на странице")
@@ -109,4 +109,54 @@ public class ProductController {
     ) {
         return productService.getFilteredAndSortedProducts(name, sortBy, page, size);
     }
+
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'MANAGER')")
+    @PostMapping(value = "/{id}/quantity", params = {"action", "quantity"})
+    @Operation(summary = "изменение количества товара")
+    public ResponseEntity<Void> updateProductQuantity(@Parameter(description = "id продукта")
+                                                      @PathVariable("id") Long id,
+                                                      @Parameter(description = "действие (inc/dec)")
+                                                      @RequestParam(value = "action") String action,
+                                                      @Parameter(description = "количество")
+                                                      @RequestParam(value = "quantity") Integer quantity) {
+
+        if ("inc".equals(action)) {
+            productService.addQuantity(quantity, id);
+        } else if ("dec".equals(action)) {
+            productService.subtractQuantity(quantity, id);
+        } else {
+            throw new IllegalArgumentException("Invalid action: " + action);
+        }
+
+        return ResponseEntity.ok().build();
+    }
+
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'MANAGER')")
+    @PutMapping(value = "/{id}/availability")
+    @Operation(summary = "обновление доступности товара")
+    public ResponseEntity<Void> updateProductAvailability(@Parameter(description = "id товара")
+                                                          @PathVariable("id") Long id,
+                                                          @RequestBody @Valid AvailabilityRequest availabilityRequest) {
+
+        if (availabilityRequest.isAvailable()) {
+            productService.setAvailable(id);
+        } else {
+            productService.setUnavailable(id);
+        }
+
+        return ResponseEntity.ok().build();
+    }
+
+    private static class AvailabilityRequest {
+        private boolean available;
+
+        public boolean isAvailable() {
+            return available;
+        }
+
+        public void setAvailable(boolean available) {
+            this.available = available;
+        }
+    }
+
 }
