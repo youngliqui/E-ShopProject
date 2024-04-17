@@ -54,4 +54,7 @@ public class ProductDTO {
 
     @Schema(description = "Отзывы на товар")
     private List<ReviewsDTO> reviews;
+
+    @Schema(description = "теги товара")
+    private List<String> tags;
 }

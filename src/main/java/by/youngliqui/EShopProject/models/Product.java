@@ -90,6 +90,10 @@ public class Product {
         this.quantity += quantity;
     }
 
+    public void addTags(List<String> tags) {
+        this.tags.addAll(tags);
+    }
+
     public void subtractQuantity(Integer quantity) {
         this.quantity -= quantity;
     }

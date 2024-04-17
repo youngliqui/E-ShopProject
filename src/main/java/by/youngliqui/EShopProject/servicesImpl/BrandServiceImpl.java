@@ -93,7 +93,7 @@ public class BrandServiceImpl implements BrandService {
         Brand brand = brandRepository.findById(brandId)
                 .orElseThrow(() -> new BrandNotFoundException("brand with id " + brandId + " was not found"));
 
-        List<Product> products = productRepository.findAllById(List.of());
+        List<Product> products = productRepository.findAllById(productIds);
         brand.addProducts(products);
 
         for (Product product : products) {

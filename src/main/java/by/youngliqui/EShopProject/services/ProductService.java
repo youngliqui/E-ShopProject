@@ -24,4 +24,6 @@ public interface ProductService {
     void setAvailable(Long productId);
 
     void setUnavailable(Long productId);
+
+    void addTagsToProduct(Long productId, List<String> tags);
 }

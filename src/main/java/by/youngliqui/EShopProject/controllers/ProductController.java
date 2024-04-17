@@ -97,6 +97,19 @@ public class ProductController {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
     }
 
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'MANAGER')")
+    @PostMapping("{id}/tags")
+    @Operation(summary = "добавление тегов к товару")
+    public ResponseEntity<Void> addTagsToProduct(@Parameter(description = "id продукта")
+                                                 @PathVariable("id") Long productId,
+                                                 @Parameter(description = "список тегов")
+                                                 @RequestBody List<String> tags) {
+
+        productService.addTagsToProduct(productId, tags);
+
+        return ResponseEntity.ok().build();
+    }
+
     @GetMapping(params = {"page", "size"})
     @Operation(summary = "получение страниц с товарами")
     public List<ProductDTO> getFilteredAndSortedProducts(

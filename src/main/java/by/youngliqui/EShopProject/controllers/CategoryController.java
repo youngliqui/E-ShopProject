@@ -76,7 +76,7 @@ public class CategoryController {
     }
 
     @PreAuthorize("hasAnyAuthority('ADMIN', 'MANAGER')")
-    @GetMapping(value = "/add", params = "{categoryId, productId}")
+    @GetMapping(value = "/add")
     @Operation(summary = "добавление категории к товару по id")
     public ResponseEntity<HttpStatus> addCategoryToProductById(
             @Parameter(description = "id категории") @RequestParam(value = "categoryId") Long categoryId,
@@ -88,10 +88,10 @@ public class CategoryController {
     }
 
     @PreAuthorize("hasAnyAuthority('ADMIN', 'MANAGER')")
-    @GetMapping(value = "/add/name", params = "{categoryId, productId}")
-    @Operation(summary = "добавление категории к товару по id")
+    @GetMapping(value = "/add/name")
+    @Operation(summary = "добавление категории к товару по названию")
     public ResponseEntity<HttpStatus> addCategoryToProductById(
-            @Parameter(description = "id категории") @RequestParam(value = "categoryId") String categoryName,
+            @Parameter(description = "название категории") @RequestParam(value = "categoryName") String categoryName,
             @Parameter(description = "id товара") @RequestParam(value = "productId") Long productId) {
 
         categoryService.addCategoryToProductByName(productId, categoryName);

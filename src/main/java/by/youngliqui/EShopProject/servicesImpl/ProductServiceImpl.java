@@ -1,11 +1,15 @@
 package by.youngliqui.EShopProject.servicesImpl;
 
 import by.youngliqui.EShopProject.dto.ProductDTO;
+import by.youngliqui.EShopProject.exceptions.BrandNotFoundException;
+import by.youngliqui.EShopProject.exceptions.CategoryNotFoundException;
 import by.youngliqui.EShopProject.exceptions.ProductNotFoundException;
 import by.youngliqui.EShopProject.mappers.ProductMapper;
 import by.youngliqui.EShopProject.models.Bucket;
 import by.youngliqui.EShopProject.models.Product;
 import by.youngliqui.EShopProject.models.User;
+import by.youngliqui.EShopProject.repositories.BrandRepository;
+import by.youngliqui.EShopProject.repositories.CategoryRepository;
 import by.youngliqui.EShopProject.repositories.ProductRepository;
 import by.youngliqui.EShopProject.services.BucketService;
 import by.youngliqui.EShopProject.services.ProductService;
@@ -28,12 +32,16 @@ public class ProductServiceImpl implements ProductService {
 
     private final UserService userService;
     private final BucketService bucketService;
+    private final BrandRepository brandRepository;
+    private final CategoryRepository categoryRepository;
 
     @Autowired
-    public ProductServiceImpl(ProductRepository productRepository, UserService userService, BucketService bucketService) {
+    public ProductServiceImpl(ProductRepository productRepository, UserService userService, BucketService bucketService, BrandRepository brandRepository, CategoryRepository categoryRepository) {
         this.productRepository = productRepository;
         this.userService = userService;
         this.bucketService = bucketService;
+        this.brandRepository = brandRepository;
+        this.categoryRepository = categoryRepository;
     }
 
     @Override
@@ -70,6 +78,23 @@ public class ProductServiceImpl implements ProductService {
         }
 
         Product product = productMapper.toProduct(productDTO);
+
+        String brandName = productDTO.getBrandName();
+        if (brandName != null) {
+            product.setBrand(brandRepository.findFirstByNameIgnoreCase(brandName).orElseThrow(
+                    () -> new BrandNotFoundException("brand with name " + brandName + " was not found"))
+            );
+        }
+
+        List<String> categoriesNames = productDTO.getCategoriesNames();
+        if (!categoriesNames.isEmpty()) {
+            for (String category : categoriesNames) {
+                product.addCategory(categoryRepository.findFirstByTitleIgnoreCase(category).orElseThrow(
+                        () -> new CategoryNotFoundException("category with title " + category + " was not found")
+                ));
+            }
+        }
+
         productRepository.save(product);
     }
 
@@ -173,6 +198,17 @@ public class ProductServiceImpl implements ProductService {
         );
 
         product.setUnavailable();
+        productRepository.save(product);
+    }
+
+    @Override
+    @Transactional
+    public void addTagsToProduct(Long productId, List<String> tags) {
+        Product product = productRepository.findById(productId).orElseThrow(
+                () -> new ProductNotFoundException("product with id " + productId + " was not found")
+        );
+
+        product.addTags(tags);
         productRepository.save(product);
     }
 }

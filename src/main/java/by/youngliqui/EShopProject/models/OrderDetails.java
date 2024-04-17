@@ -28,10 +28,13 @@ public class OrderDetails {
     private Product product;
     private BigDecimal amount;
     private BigDecimal price;
+
     public OrderDetails(Order order, Product product, Long amount) {
         this.order = order;
         this.product = product;
         this.amount = new BigDecimal(amount);
-        this.price = product.getPrice();
+        this.price = product.getPrice().subtract(
+                product.getPrice().multiply(product.getSale()).multiply(BigDecimal.valueOf(0.01))
+        );
     }
 }
