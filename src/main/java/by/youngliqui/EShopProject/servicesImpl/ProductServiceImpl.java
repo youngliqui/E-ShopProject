@@ -5,9 +5,7 @@ import by.youngliqui.EShopProject.exceptions.BrandNotFoundException;
 import by.youngliqui.EShopProject.exceptions.CategoryNotFoundException;
 import by.youngliqui.EShopProject.exceptions.ProductNotFoundException;
 import by.youngliqui.EShopProject.mappers.ProductMapper;
-import by.youngliqui.EShopProject.models.Bucket;
-import by.youngliqui.EShopProject.models.Product;
-import by.youngliqui.EShopProject.models.User;
+import by.youngliqui.EShopProject.models.*;
 import by.youngliqui.EShopProject.repositories.BrandRepository;
 import by.youngliqui.EShopProject.repositories.CategoryRepository;
 import by.youngliqui.EShopProject.repositories.ProductRepository;
@@ -21,6 +19,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 
@@ -59,6 +58,7 @@ public class ProductServiceImpl implements ProductService {
 
         Bucket bucket = user.getBucket();
 
+        subtractQuantity(1, productId);
         if (bucket == null) {
             Bucket newBucket = bucketService.createBucket(user, Collections.singletonList(productId));
             user.setBucket(newBucket);
@@ -66,8 +66,6 @@ public class ProductServiceImpl implements ProductService {
         } else {
             bucketService.addProducts(bucket, Collections.singletonList(productId));
         }
-
-        subtractQuantity(1, productId);
     }
 
     @Override
@@ -77,24 +75,32 @@ public class ProductServiceImpl implements ProductService {
             productDTO.setAvailability(false);
         }
 
+        if (productDTO.getQuantity() == null || productDTO.getQuantity() < 0) {
+            productDTO.setQuantity(0);
+        }
+
         Product product = productMapper.toProduct(productDTO);
 
         String brandName = productDTO.getBrandName();
         if (brandName != null) {
-            product.setBrand(brandRepository.findFirstByNameIgnoreCase(brandName).orElseThrow(
-                    () -> new BrandNotFoundException("brand with name " + brandName + " was not found"))
-            );
+            Brand brand = brandRepository.findFirstByNameIgnoreCase(brandName).orElseThrow(
+                    () -> new BrandNotFoundException("brand with name " + brandName + " was not found"));
+
+            product.setBrand(brand);
+            brand.addProduct(product);
         }
 
         List<String> categoriesNames = productDTO.getCategoriesNames();
         if (!categoriesNames.isEmpty()) {
-            for (String category : categoriesNames) {
-                product.addCategory(categoryRepository.findFirstByTitleIgnoreCase(category).orElseThrow(
-                        () -> new CategoryNotFoundException("category with title " + category + " was not found")
-                ));
+            for (String categoryName : categoriesNames) {
+                Category category = categoryRepository.findFirstByTitleIgnoreCase(categoryName).orElseThrow(
+                        () -> new CategoryNotFoundException("category with title " + categoryName + " was not found"));
+
+                product.addCategory(category);
             }
         }
 
+        product.setCreatedAt(LocalDateTime.now());
         productRepository.save(product);
     }
 
@@ -162,6 +168,10 @@ public class ProductServiceImpl implements ProductService {
         );
 
         Integer productQuantity = product.getQuantity();
+
+        if (productQuantity == null || productQuantity <= 0) {
+            throw new IllegalArgumentException("the product is missing");
+        }
 
         if (productQuantity < quantity) {
             throw new IllegalArgumentException("the quantity transferred is more than the quantity of the product");

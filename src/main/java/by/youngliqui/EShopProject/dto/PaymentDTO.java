@@ -14,6 +14,8 @@ import java.math.BigDecimal;
 @Builder
 @Schema(description = "Оплата заказа")
 public class PaymentDTO {
+    @Schema(description = "id заказа")
+    private Long orderId;
     @Schema(description = "Тип оплаты")
     private String paymentType;
 

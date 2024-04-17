@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 @Data
 @NoArgsConstructor
@@ -19,7 +20,7 @@ public class BucketDetailsDTO {
     private String title;
     @Schema(description = "цена одного товара")
     private BigDecimal price;
-    @Schema(description = "общая стоимость товаров")
+    @Schema(description = "количество товара")
     private BigDecimal amount;
     @Schema(description = "сумма товаров")
     private Double sum;
@@ -27,8 +28,9 @@ public class BucketDetailsDTO {
     public BucketDetailsDTO(Product product) {
         this.title = product.getTitle();
         this.amount = new BigDecimal("1.0");
-        this.sum = Double.valueOf(product.getPrice().toString());
         this.price = product.getPrice().subtract(product.getPrice()
-                .multiply(product.getSale().multiply(BigDecimal.valueOf(0.01))));
+                        .multiply(product.getSale().multiply(BigDecimal.valueOf(0.01))))
+                .setScale(2, RoundingMode.HALF_EVEN);
+        this.sum = price.multiply(amount).doubleValue();
     }
 }

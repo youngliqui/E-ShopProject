@@ -1,5 +1,5 @@
 package by.youngliqui.EShopProject.models.Enums;
 
 public enum PaymentType {
-    CASH, BY_CARD
+    CASH, BY_CARD, CRYPTO
 }

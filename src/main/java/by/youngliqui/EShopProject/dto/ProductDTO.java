@@ -57,4 +57,7 @@ public class ProductDTO {
 
     @Schema(description = "теги товара")
     private List<String> tags;
+
+    @Schema(description = "кол-во товара")
+    private Integer quantity;
 }

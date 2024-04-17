@@ -1,9 +1,11 @@
 package by.youngliqui.EShopProject.mappers;
 
 import by.youngliqui.EShopProject.dto.ProductDTO;
+import by.youngliqui.EShopProject.dto.ReviewsDTO;
 import by.youngliqui.EShopProject.models.Brand;
 import by.youngliqui.EShopProject.models.Category;
 import by.youngliqui.EShopProject.models.Product;
+import by.youngliqui.EShopProject.models.Review;
 import org.mapstruct.InheritInverseConfiguration;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -22,6 +24,7 @@ public interface ProductMapper {
     @InheritInverseConfiguration
     @Mapping(target = "categoriesNames", source = "categories", qualifiedByName = "mapCategoriesToNames")
     @Mapping(target = "brandName", source = "brand", qualifiedByName = "mapBrandToName")
+    @Mapping(target = "reviews", source = "reviews", qualifiedByName = "mapReviewToReviewDTO")
     ProductDTO fromProduct(Product product);
 
     List<Product> toProductList(List<ProductDTO> productDTOS);
@@ -37,5 +40,10 @@ public interface ProductMapper {
     @Named("mapBrandToName")
     default String mapBrandToName(Brand brand) {
         return brand != null ? brand.getName() : null;
+    }
+
+    @Named("mapReviewToReviewDTO")
+    default List<ReviewsDTO> mapReviewToReviewDTO(List<Review> reviews) {
+        return ReviewMapper.MAPPER.fromReviewList(reviews);
     }
 }

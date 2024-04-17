@@ -11,6 +11,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -44,7 +45,7 @@ public class Product {
     @Enumerated(EnumType.STRING)
     private Size size;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "brand_id")
     private Brand brand;
 
@@ -74,12 +75,14 @@ public class Product {
     private List<String> tags;
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Review> reviews;
-    @OneToOne(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Payment payment;
-
 
     public void addCategory(Category category) {
-        categories.add(category);
+        if (categories == null) {
+            categories = new ArrayList<>();
+            categories.add(category);
+        } else {
+            categories.add(category);
+        }
     }
 
     public void addBrand(Brand brand) {
