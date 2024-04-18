@@ -1,6 +1,5 @@
 package by.youngliqui.EShopProject.dto;
 
-import by.youngliqui.EShopProject.models.OrderDetails;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,6 +15,8 @@ import java.util.List;
 @Builder
 @Schema(description = "Заказ")
 public class OrderDTO {
+    @Schema(description = "id заказа")
+    private Long id;
     @Schema(description = "Имя заказчика")
     private String nameOfUser;
 

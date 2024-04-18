@@ -48,8 +48,8 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public List<Order> getAllOrders() {
-        return orderRepository.findAll();
+    public List<OrderDTO> getAllOrders() {
+        return MAPPER.toOrderDTOs(orderRepository.findAll());
     }
 
     @Override
@@ -59,37 +59,28 @@ public class OrderServiceImpl implements OrderService {
                 () -> new OrderNotFoundException("order with id " + orderId + " was not found")
         );
 
-        switch (status) {
-            case "new":
-                order.setStatus(OrderStatus.NEW);
-                break;
-
-            case "paid":
-                order.setStatus(OrderStatus.PAID);
-                break;
-
-            case "approved":
-                order.setStatus(OrderStatus.APPROVED);
-                break;
-
-            case "closed":
-                order.setStatus(OrderStatus.CLOSED);
-                break;
-
-            case "canceled":
-                order.setStatus(OrderStatus.CANCELED);
-
-            default:
-                throw new IllegalArgumentException("status " + status + " not found");
+        if (status.contains("new")) {
+            order.setStatus(OrderStatus.NEW);
+        } else if (status.contains("paid")) {
+            order.setStatus(OrderStatus.PAID);
+        } else if (status.contains("approved")) {
+            order.setStatus(OrderStatus.APPROVED);
+        } else if (status.contains("closed")) {
+            order.setStatus(OrderStatus.CLOSED);
+        } else if (status.contains("canceled")) {
+            order.setStatus(OrderStatus.CANCELED);
+        } else {
+            throw new IllegalArgumentException("status " + status + " not found");
         }
+
 
         orderRepository.save(order);
     }
 
     @Override
     @Transactional
-    public void createOrderPayment(PaymentDTO paymentDTO, String username) {
-        Order order = orderRepository.findById(paymentDTO.getOrderId()).orElseThrow(
+    public void createOrderPayment(Long orderId, PaymentDTO paymentDTO, String username) {
+        Order order = orderRepository.findById(orderId).orElseThrow(
                 () -> new OrderNotFoundException("order with id " + paymentDTO.getOrderId() + " was not found")
         );
 
@@ -108,7 +99,7 @@ public class OrderServiceImpl implements OrderService {
                 .amount(paymentDTO.getAmount())
                 .build();
 
-        if (!order.getSum().equals(payment.getAmount())) {
+        if (order.getSum().compareTo(payment.getAmount()) != 0) {
             throw new IllegalArgumentException("order sum and payment sum it not equals");
         }
 

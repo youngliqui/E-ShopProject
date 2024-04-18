@@ -103,11 +103,19 @@ public class ProductController {
     public ResponseEntity<Void> addTagsToProduct(@Parameter(description = "id продукта")
                                                  @PathVariable("id") Long productId,
                                                  @Parameter(description = "список тегов")
-                                                 @RequestBody List<String> tags) {
+                                                 @RequestBody TagsRequest tagsRequest) {
 
-        productService.addTagsToProduct(productId, tags);
+        productService.addTagsToProduct(productId, tagsRequest.getTags());
 
         return ResponseEntity.ok().build();
+    }
+
+    private static class TagsRequest {
+        private List<String> tags;
+
+        public List<String> getTags() {
+            return tags;
+        }
     }
 
     @GetMapping(params = {"page", "size"})

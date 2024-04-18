@@ -13,9 +13,9 @@ public interface OrderService {
 
     List<OrderDTO> getOrdersByUserId(Long id);
 
-    List<Order> getAllOrders();
+    List<OrderDTO> getAllOrders();
 
     void updateOrderStatus(String status, Long orderId);
 
-    void createOrderPayment(PaymentDTO paymentDTO, String username);
+    void createOrderPayment(Long orderId, PaymentDTO paymentDTO, String username);
 }

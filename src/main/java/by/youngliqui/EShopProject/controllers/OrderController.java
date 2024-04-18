@@ -3,7 +3,6 @@ package by.youngliqui.EShopProject.controllers;
 import by.youngliqui.EShopProject.dto.OrderDTO;
 import by.youngliqui.EShopProject.dto.PaymentDTO;
 import by.youngliqui.EShopProject.exceptions.UserNotAuthorizeException;
-import by.youngliqui.EShopProject.models.Order;
 import by.youngliqui.EShopProject.services.OrderService;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.Operation;
@@ -37,7 +36,7 @@ public class OrderController {
     @GetMapping
     @PreAuthorize("hasAnyAuthority('ADMIN', 'MANAGER')")
     @Operation(summary = "получение всех заказов")
-    public List<Order> getAll() {
+    public List<OrderDTO> getAll() {
         return orderService.getAllOrders();
     }
 
@@ -83,9 +82,11 @@ public class OrderController {
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping(value = "/payment")
+    @PostMapping(value = "{id}/payment")
     @Operation(summary = "опалата заказа")
-    public ResponseEntity<Void> createOrderPayment(@Parameter(description = "тело оплаты")
+    public ResponseEntity<Void> createOrderPayment(@Parameter(description = "id заказа")
+                                                   @PathVariable("id") Long orderId,
+                                                   @Parameter(description = "тело оплаты")
                                                    @RequestBody PaymentDTO paymentDTO,
                                                    Principal principal) {
 
@@ -93,7 +94,7 @@ public class OrderController {
             throw new UserNotAuthorizeException("you are not authorize");
         }
 
-        orderService.createOrderPayment(paymentDTO, principal.getName());
+        orderService.createOrderPayment(orderId, paymentDTO, principal.getName());
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
