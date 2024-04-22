@@ -37,5 +37,4 @@ public interface ReviewMapper {
     default String mapReviewerToReviewerName(User reviewer) {
         return reviewer != null ? reviewer.getName() : null;
     }
-
 }

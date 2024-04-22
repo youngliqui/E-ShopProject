@@ -283,11 +283,11 @@ class UserServiceImplTest {
     private static Stream<Arguments> getUsers() {
         return Stream.of(
                 Arguments.of(new User(1L, "user1", "pass1", "user1@gmail.com",
-                        false, Role.CLIENT, null, null)),
+                        false, Role.CLIENT, null, null, null)),
                 Arguments.of(new User(2L, "user2", "pass2", "user2@gmail.com",
-                        false, Role.MANAGER, null, null)),
+                        false, Role.MANAGER, null, null, null)),
                 Arguments.of(new User(3L, "user3", "pass3", "user3@gmail.com",
-                        true, Role.ADMIN, null, null))
+                        true, Role.ADMIN, null, null, null))
         );
     }
 }

@@ -20,7 +20,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/reviews")
 @Tag(name = "Отзывы", description = "методы для работы с отзывами")
-@OpenAPIDefinition(info = @Info(title = "E-SHOP API", version = "v1"))
 @SecurityRequirement(name = "basicAuth")
 public class ReviewController {
     private final ReviewService reviewService;

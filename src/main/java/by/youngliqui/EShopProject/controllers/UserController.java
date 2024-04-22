@@ -31,7 +31,6 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/users")
 @Tag(name = "Пользователи", description = "методы для работы с пользователями")
-@OpenAPIDefinition(info = @Info(title = "E-SHOP API", version = "v1"))
 @SecurityRequirement(name = "basicAuth")
 public class UserController {
     private final UserService userService;

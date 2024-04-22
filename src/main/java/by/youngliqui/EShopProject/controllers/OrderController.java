@@ -22,7 +22,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/orders")
 @Tag(name = "Заказы", description = "методы для работы с заказами")
-@OpenAPIDefinition(info = @Info(title = "E-SHOP API", version = "v1"))
 @SecurityRequirement(name = "basicAuth")
 public class OrderController {
     private final OrderService orderService;

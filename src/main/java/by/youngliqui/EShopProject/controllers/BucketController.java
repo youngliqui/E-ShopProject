@@ -20,7 +20,6 @@ import java.security.Principal;
 @RestController
 @RequestMapping("/bucket")
 @Tag(name = "Корзина товаров", description = "методы для работы с корзиной товаров")
-@OpenAPIDefinition(info = @Info(title = "E-SHOP API", version = "v1"))
 @SecurityRequirement(name = "basicAuth")
 public class BucketController {
     private final BucketService bucketService;

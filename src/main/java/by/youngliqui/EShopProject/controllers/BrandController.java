@@ -20,7 +20,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/brands")
 @Tag(name = "бренды", description = "методы работы с брендами")
-@OpenAPIDefinition(info = @Info(title = "E-SHOP API", version = "v1"))
 @SecurityRequirement(name = "basicAuth")
 public class BrandController {
     private final BrandService brandService;
@@ -97,6 +96,4 @@ public class BrandController {
 
         return ResponseEntity.ok(HttpStatus.OK);
     }
-
-
 }

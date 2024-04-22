@@ -17,8 +17,9 @@ import java.util.stream.Collectors;
 
 @ControllerAdvice
 public class ErrorControllerAdvice extends ResponseEntityExceptionHandler {
-    @ExceptionHandler(UserNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleUserNotFoundException(UserNotFoundException ex) {
+    @ExceptionHandler(value = {UserNotFoundException.class, ProductNotFoundException.class,
+    BrandNotFoundException.class, OrderNotFoundException.class, CategoryNotFoundException.class})
+    public ResponseEntity<ErrorResponse> handleNotFoundException(RuntimeException ex) {
         ErrorResponse response = new ErrorResponse(
                 ex.getMessage(),
                 System.currentTimeMillis()
@@ -49,15 +50,6 @@ public class ErrorControllerAdvice extends ResponseEntityExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
     }
 
-    @ExceptionHandler(ProductNotFoundException.class)
-    public ResponseEntity<Object> handleProductNotFoundException(ProductNotFoundException ex) {
-        ErrorResponse response = new ErrorResponse(
-                ex.getMessage(),
-                System.currentTimeMillis()
-        );
-        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
-    }
-
     @ExceptionHandler(ProductNotCreatedException.class)
     public ResponseEntity<Object> handleProductNotCreatedException(ProductNotCreatedException ex) {
         ErrorResponse response = new ErrorResponse(
@@ -79,33 +71,6 @@ public class ErrorControllerAdvice extends ResponseEntityExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Object> handleException(Exception ex) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
-    }
-
-    @ExceptionHandler(BrandNotFoundException.class)
-    public ResponseEntity<Object> handleProductNotFoundException(BrandNotFoundException ex) {
-        ErrorResponse response = new ErrorResponse(
-                ex.getMessage(),
-                System.currentTimeMillis()
-        );
-        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
-    }
-
-    @ExceptionHandler(CategoryNotFoundException.class)
-    public ResponseEntity<Object> handleCategoryNotFoundException(CategoryNotFoundException ex) {
-        ErrorResponse response = new ErrorResponse(
-                ex.getMessage(),
-                System.currentTimeMillis()
-        );
-        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
-    }
-
-    @ExceptionHandler(OrderNotFoundException.class)
-    public ResponseEntity<Object> handleOrderNotFoundException(OrderNotFoundException ex) {
-        ErrorResponse response = new ErrorResponse(
-                ex.getMessage(),
-                System.currentTimeMillis()
-        );
-        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(IllegalArgumentException.class)

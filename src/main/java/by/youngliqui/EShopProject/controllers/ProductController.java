@@ -25,7 +25,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/products")
 @Tag(name = "Продукты", description = "методы для работы с продуктами")
-@OpenAPIDefinition(info = @Info(title = "E-SHOP API", version = "v1"))
 @SecurityRequirement(name = "basicAuth")
 public class ProductController {
     private final ProductService productService;
